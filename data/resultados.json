@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "12/06/2026 13:40",
+  "atualizado_em": "12/06/2026 13:58",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -12,67 +12,67 @@
   "grupos": {
     "11/06 | México x África do Sul": {
       "grupo": "A",
-      "horario": null,
-      "gc": null,
-      "gf": null
+      "horario": "16:00",
+      "gc": 2,
+      "gf": 0
     },
     "11/06 | Coreia do Sul x República Tcheca": {
       "grupo": "A",
-      "horario": null,
-      "gc": null,
-      "gf": null
+      "horario": "23:00",
+      "gc": 2,
+      "gf": 1
     },
     "12/06 | Canadá x Bósnia e Herzegovina": {
       "grupo": "B",
-      "horario": null,
+      "horario": "16:00",
       "gc": null,
       "gf": null
     },
     "12/06 | Estados Unidos x Paraguai": {
       "grupo": "D",
-      "horario": null,
+      "horario": "22:00",
       "gc": null,
       "gf": null
     },
     "13/06 | Catar x Suíça": {
       "grupo": "B",
-      "horario": null,
+      "horario": "16:00",
       "gc": null,
       "gf": null
     },
     "13/06 | Brasil x Marrocos": {
       "grupo": "C",
-      "horario": null,
+      "horario": "19:00",
       "gc": null,
       "gf": null
     },
     "13/06 | Haiti x Escócia": {
       "grupo": "C",
-      "horario": null,
+      "horario": "22:00",
       "gc": null,
       "gf": null
     },
     "13/06 | Austrália x Turquia": {
       "grupo": "D",
-      "horario": null,
+      "horario": "01:00",
       "gc": null,
       "gf": null
     },
     "14/06 | Alemanha x Curaçao": {
       "grupo": "E",
-      "horario": null,
+      "horario": "14:00",
       "gc": null,
       "gf": null
     },
     "14/06 | Costa do Marfim x Equador": {
       "grupo": "E",
-      "horario": null,
+      "horario": "20:00",
       "gc": null,
       "gf": null
     },
     "14/06 | Holanda x Japão": {
       "grupo": "F",
-      "horario": null,
+      "horario": "17:00",
       "gc": null,
       "gf": null
     },
@@ -84,13 +84,13 @@
     },
     "15/06 | Bélgica x Egito": {
       "grupo": "G",
-      "horario": null,
+      "horario": "16:00",
       "gc": null,
       "gf": null
     },
     "15/06 | Irã x Nova Zelândia": {
       "grupo": "G",
-      "horario": null,
+      "horario": "22:00",
       "gc": null,
       "gf": null
     },
@@ -102,13 +102,13 @@
     },
     "15/06 | Arábia Saudita x Uruguai": {
       "grupo": "H",
-      "horario": null,
+      "horario": "19:00",
       "gc": null,
       "gf": null
     },
     "16/06 | França x Senegal": {
       "grupo": "I",
-      "horario": null,
+      "horario": "16:00",
       "gc": null,
       "gf": null
     },
@@ -120,37 +120,37 @@
     },
     "16/06 | Argentina x Argélia": {
       "grupo": "J",
-      "horario": null,
+      "horario": "22:00",
       "gc": null,
       "gf": null
     },
     "17/06 | Áustria x Jordânia": {
       "grupo": "J",
-      "horario": null,
+      "horario": "01:00",
       "gc": null,
       "gf": null
     },
     "17/06 | Portugal x RD Congo": {
       "grupo": "K",
-      "horario": null,
+      "horario": "14:00",
       "gc": null,
       "gf": null
     },
     "17/06 | Uzbequistão x Colômbia": {
       "grupo": "K",
-      "horario": null,
+      "horario": "23:00",
       "gc": null,
       "gf": null
     },
     "17/06 | Inglaterra x Croácia": {
       "grupo": "L",
-      "horario": null,
+      "horario": "17:00",
       "gc": null,
       "gf": null
     },
     "17/06 | Gana x Panamá": {
       "grupo": "L",
-      "horario": null,
+      "horario": "20:00",
       "gc": null,
       "gf": null
     },
@@ -162,19 +162,19 @@
     },
     "18/06 | México x Coreia do Sul": {
       "grupo": "A",
-      "horario": null,
+      "horario": "22:00",
       "gc": null,
       "gf": null
     },
     "18/06 | Suíça x Bósnia e Herzegovina": {
       "grupo": "B",
-      "horario": null,
+      "horario": "16:00",
       "gc": null,
       "gf": null
     },
     "18/06 | Canadá x Catar": {
       "grupo": "B",
-      "horario": null,
+      "horario": "19:00",
       "gc": null,
       "gf": null
     },
@@ -186,7 +186,7 @@
     },
     "19/06 | Brasil x Haiti": {
       "grupo": "C",
-      "horario": null,
+      "horario": "21:30",
       "gc": null,
       "gf": null
     },
@@ -198,13 +198,13 @@
     },
     "19/06 | Estados Unidos x Austrália": {
       "grupo": "D",
-      "horario": null,
+      "horario": "16:00",
       "gc": null,
       "gf": null
     },
     "20/06 | Alemanha x Costa do Marfim": {
       "grupo": "E",
-      "horario": null,
+      "horario": "17:00",
       "gc": null,
       "gf": null
     },
@@ -216,7 +216,7 @@
     },
     "20/06 | Holanda x Suécia": {
       "grupo": "F",
-      "horario": null,
+      "horario": "14:00",
       "gc": null,
       "gf": null
     },
@@ -228,7 +228,7 @@
     },
     "21/06 | Bélgica x Irã": {
       "grupo": "G",
-      "horario": null,
+      "horario": "16:00",
       "gc": null,
       "gf": null
     },
@@ -240,7 +240,7 @@
     },
     "21/06 | Espanha x Arábia Saudita": {
       "grupo": "H",
-      "horario": null,
+      "horario": "13:00",
       "gc": null,
       "gf": null
     },
@@ -252,7 +252,7 @@
     },
     "22/06 | França x Iraque": {
       "grupo": "I",
-      "horario": null,
+      "horario": "18:00",
       "gc": null,
       "gf": null
     },
@@ -264,7 +264,7 @@
     },
     "22/06 | Argentina x Áustria": {
       "grupo": "J",
-      "horario": null,
+      "horario": "14:00",
       "gc": null,
       "gf": null
     },
@@ -276,19 +276,19 @@
     },
     "23/06 | Portugal x Uzbequistão": {
       "grupo": "K",
-      "horario": null,
+      "horario": "14:00",
       "gc": null,
       "gf": null
     },
     "23/06 | Colômbia x RD Congo": {
       "grupo": "K",
-      "horario": null,
+      "horario": "23:00",
       "gc": null,
       "gf": null
     },
     "23/06 | Inglaterra x Gana": {
       "grupo": "L",
-      "horario": null,
+      "horario": "17:00",
       "gc": null,
       "gf": null
     },
@@ -306,7 +306,7 @@
     },
     "24/06 | África do Sul x Coreia do Sul": {
       "grupo": "A",
-      "horario": null,
+      "horario": "22:00",
       "gc": null,
       "gf": null
     },
@@ -330,7 +330,7 @@
     },
     "24/06 | Marrocos x Haiti": {
       "grupo": "C",
-      "horario": null,
+      "horario": "19:00",
       "gc": null,
       "gf": null
     },
@@ -342,7 +342,7 @@
     },
     "25/06 | Paraguai x Austrália": {
       "grupo": "D",
-      "horario": null,
+      "horario": "23:00",
       "gc": null,
       "gf": null
     },
@@ -354,7 +354,7 @@
     },
     "25/06 | Curaçao x Costa do Marfim": {
       "grupo": "E",
-      "horario": null,
+      "horario": "17:00",
       "gc": null,
       "gf": null
     },
@@ -366,7 +366,7 @@
     },
     "25/06 | Japão x Suécia": {
       "grupo": "F",
-      "horario": null,
+      "horario": "20:00",
       "gc": null,
       "gf": null
     },
@@ -390,7 +390,7 @@
     },
     "26/06 | Senegal x Iraque": {
       "grupo": "I",
-      "horario": null,
+      "horario": "16:00",
       "gc": null,
       "gf": null
     },
@@ -402,7 +402,7 @@
     },
     "27/06 | Egito x Irã": {
       "grupo": "G",
-      "horario": null,
+      "horario": "00:00",
       "gc": null,
       "gf": null
     },
@@ -414,7 +414,7 @@
     },
     "27/06 | Argélia x Áustria": {
       "grupo": "J",
-      "horario": null,
+      "horario": "23:00",
       "gc": null,
       "gf": null
     },
@@ -438,7 +438,7 @@
     },
     "27/06 | Croácia x Gana": {
       "grupo": "L",
-      "horario": null,
+      "horario": "18:00",
       "gc": null,
       "gf": null
     }
