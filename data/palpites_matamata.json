@@ -1,0 +1,47 @@
+{
+  "_instrucoes": "Estrutura para o mata-mata. Para cada fase: 'aberta' libera a janela de palpites; 'jogos' lista os confrontos {id, data, casa, fora}; 'palpites' mapeia nome do participante -> {id_do_jogo: [gc,gf]}; 'resultados' mapeia id_do_jogo -> {gc,gf,penaltis?}. Pontuacao mata-mata: exato=8, vencedor/empate=4. Empate nos 90min conta como empate (penaltis nao pontuam).",
+  "fases": {
+    "32avos": {
+      "aberta": false,
+      "jogos": [],
+      "palpites": {},
+      "resultados": {}
+    },
+    "16avos": {
+      "aberta": false,
+      "jogos": [],
+      "palpites": {},
+      "resultados": {}
+    },
+    "oitavas": {
+      "aberta": false,
+      "jogos": [],
+      "palpites": {},
+      "resultados": {}
+    },
+    "quartas": {
+      "aberta": false,
+      "jogos": [],
+      "palpites": {},
+      "resultados": {}
+    },
+    "semis": {
+      "aberta": false,
+      "jogos": [],
+      "palpites": {},
+      "resultados": {}
+    },
+    "terceiro": {
+      "aberta": false,
+      "jogos": [],
+      "palpites": {},
+      "resultados": {}
+    },
+    "final": {
+      "aberta": false,
+      "jogos": [],
+      "palpites": {},
+      "resultados": {}
+    }
+  }
+}

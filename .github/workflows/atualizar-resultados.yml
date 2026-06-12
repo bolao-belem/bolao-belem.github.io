@@ -1,0 +1,60 @@
+name: Atualizar resultados e publicar
+
+on:
+  schedule:
+    # Cron em UTC. Brasília = UTC-3.
+    - cron: "0 13 * * *"   # 10h Brasília
+    - cron: "0 1 * * *"    # 22h Brasília
+  workflow_dispatch:        # botão "Run workflow" / atualização manual
+  push:
+    branches: [main]        # republica ao editar resultados na mão
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Evita execuções concorrentes de publicação
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  atualizar-e-publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Em push (edição manual de resultados) só republicamos — não re-buscamos nem commitamos,
+      # evitando laço de gatilho. Cron e botão manual buscam normalmente.
+      - name: Buscar resultados na API (best-effort)
+        if: github.event_name != 'push'
+        env:
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        run: python3 scripts/fetch_resultados.py
+
+      - name: Commitar resultados atualizados
+        if: github.event_name != 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- data/resultados.json; then
+            git add data/resultados.json
+            git commit -m "chore: atualizar resultados $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          else
+            echo "Sem mudanças nos resultados."
+          fi
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload do site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - name: Publicar no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

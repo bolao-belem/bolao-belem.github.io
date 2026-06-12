@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bolão Copa 2026 — Ranking ao vivo</title>
+  <meta name="description" content="Ranking ao vivo do Bolão da Copa do Mundo 2026." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>" />
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-linha">
+      <h1>⚽ Bolão Copa 2026</h1>
+      <span id="atualizado" class="atualizado" title="Última atualização dos resultados"></span>
+    </div>
+    <p class="sub">Ranking ao vivo · 42 participantes · Copa do Mundo 2026</p>
+  </header>
+
+  <nav class="abas" role="tablist">
+    <button class="aba ativa" data-tab="hoje" role="tab">🔥 Hoje</button>
+    <button class="aba" data-tab="ranking" role="tab">🏆 Ranking</button>
+    <button class="aba" data-tab="jogos" role="tab">📅 Jogos</button>
+    <button class="aba" data-tab="master" role="tab">⭐ Master</button>
+  </nav>
+
+  <main id="conteudo">
+    <p class="carregando">Carregando dados do bolão…</p>
+  </main>
+
+  <footer class="rodape">
+    <p>Resultados via <code>data/resultados.json</code> · pontuação 5/2 (grupos) e 8/4 (mata-mata).</p>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

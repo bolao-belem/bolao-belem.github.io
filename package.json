@@ -1,0 +1,10 @@
+{
+  "name": "bolao-copa-2026-dashboard",
+  "version": "1.0.0",
+  "description": "Dashboard do Bolão da Copa do Mundo 2026 — ranking ao vivo e cola de palpites.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  }
+}

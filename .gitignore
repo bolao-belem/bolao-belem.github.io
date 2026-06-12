@@ -1,0 +1,16 @@
+.DS_Store
+node_modules/
+*.log
+
+# Arquivos gerados para compartilhar/offline — NÃO publicar.
+# bolao_pessoal.html e bolao_cockpit.html têm sua identidade: jamais subir ao repositório público.
+# bolao_grupo.html é anônimo, mas é redundante com o site (index.html) — também fica de fora.
+bolao_grupo.html
+bolao_pessoal.html
+bolao_cockpit.html
+
+# Notas pessoais / de desenvolvimento — contêm e-mail, WhatsApp e contexto do dono. NÃO publicar.
+MEMORIA_BOLAO_COPA_2026.md
+PROMPT_CLAUDE_CODE.md
+bolao_palpites_todos.json
+
