@@ -72,7 +72,7 @@ python3 scripts/build_cockpit.py       # gera bolao_cockpit.html (cartão pessoa
    (Aparece também em Settings → Pages após a 1ª publicação.)
 
 ### Atualização automática
-A Action [`.github/workflows/atualizar-resultados.yml`](.github/workflows/atualizar-resultados.yml) roda **2× ao dia** — 10h e 22h de Brasília — busca os placares, regrava `data/resultados.json` e republica o site.
+A Action [`.github/workflows/atualizar-resultados.yml`](.github/workflows/atualizar-resultados.yml) **verifica os jogos a cada 30 min durante o horário de jogos** (13h–04h Brasília) e **republica o site assim que um placar fica final** — ou seja, a atualização acontece sozinha logo após cada jogo terminar, sem horário fixo. O script só gera commit/publicação quando há mudança real (ver `scripts/fetch_resultados.py`).
 
 ### 🔄 Disparar atualização manual (sob demanda)
 No GitHub: aba **Actions** → workflow **"Atualizar resultados e publicar"** → botão **"Run workflow"** → **Run**. Em ~1 minuto o site reflete os novos placares.
@@ -139,7 +139,7 @@ scripts/fetch_resultados.py      # busca horários + placares na football-data.o
 scripts/build_single_file.py     # gera bolao_grupo.html + bolao_pessoal.html
 scripts/build_cockpit.py         # gera bolao_cockpit.html (cartão pessoal p/ cowork)
 test/                            # testes do motor e validação dos dados
-.github/workflows/               # Action 2×/dia + manual + publish
+.github/workflows/               # Action que verifica durante os jogos e publica ao sair resultado
 ```
 
 ## ⚡ Arquitetura e leveza

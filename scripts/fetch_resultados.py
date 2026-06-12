@@ -126,9 +126,14 @@ def main():
         except Exception as e:  # noqa: BLE001
             print(f"ERRO ao consultar a API: {e}", file=sys.stderr)
 
-    resultados["atualizado_em"] = agora_brasilia()
-    json.dump(resultados, open(RESULTADOS, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
-    print(f"Concluído: {atualizados} placar(es) e {horarios} horário(s) · carimbo {resultados['atualizado_em']}")
+    # Só reescreve (e portanto só gera commit/publicação) quando algo MUDOU de verdade.
+    # Resultado: o site se republica sozinho logo após cada jogo terminar — não a cada execução.
+    if atualizados or horarios:
+        resultados["atualizado_em"] = agora_brasilia()
+        json.dump(resultados, open(RESULTADOS, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+        print(f"Atualizado: {atualizados} placar(es) e {horarios} horário(s) novos · {resultados['atualizado_em']}")
+    else:
+        print("Sem novidades nesta verificação — nada a publicar.")
 
 
 if __name__ == "__main__":

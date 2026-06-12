@@ -2,9 +2,10 @@ name: Atualizar resultados e publicar
 
 on:
   schedule:
-    # Cron em UTC. Brasília = UTC-3.
-    - cron: "0 13 * * *"   # 10h Brasília
-    - cron: "0 1 * * *"    # 22h Brasília
+    # Verifica a cada 30 min DURANTE a janela de jogos (13h–04h Brasília = 16h–07h UTC).
+    # O script só publica quando um placar realmente muda → o site atualiza sozinho
+    # logo após cada jogo terminar, sem depender de um horário fixo "chutado".
+    - cron: "*/30 0-6,16-23 * * *"
   workflow_dispatch:        # botão "Run workflow" / atualização manual
   push:
     branches: [main]        # republica ao editar resultados na mão
