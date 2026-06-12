@@ -100,6 +100,13 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 .tag-acerto { font-size: .8rem; }
 .premio-proj { font-size: .72rem; color: var(--verde); font-weight: 700; }
 
+/* ---------- Sinal de pontos do dia (aba Ranking) ---------- */
+.resumo-dia { display: flex; flex-wrap: wrap; gap: 4px 14px; justify-content: center; background: #fff7d6; border: 1px solid var(--eu-borda); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: .82rem; }
+.hoje-delta { font-weight: 800; font-variant-numeric: tabular-nums; }
+.hoje-delta.mais { color: var(--exato); }
+.hoje-delta.zero { color: #fff; background: var(--errou); padding: 1px 7px; border-radius: 6px; }
+.hoje-delta.neutro { color: #c4c8cf; }
+
 /* ---------- Jogos / Resultados ---------- */
 .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .filtros select, .filtros input { padding: 8px; border: 1px solid var(--linha); border-radius: 8px; font-size: .85rem; background: var(--card); }

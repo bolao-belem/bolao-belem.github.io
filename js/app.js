@@ -301,20 +301,45 @@ function cardPanorama(g) {
 // Premiação removida temporariamente (regras em reformulação). Para reativar,
 // basta restaurar o painel .premios + a coluna "Prêmio proj." (calcularPremios() segue pronta).
 function telaRanking(c) {
+  const hoje = hojeBR();
+  // pontos ganhos HOJE por participante (só jogos de hoje já resolvidos)
+  const ganhos = estado.ranking.map((l) => {
+    const resolv = l.detalhe.filter((d) => d.data === hoje && d.status !== 'pendente');
+    return { n: resolv.length, pts: resolv.reduce((s, d) => s + d.pts, 0) };
+  });
+  const maxHoje = Math.max(0, ...ganhos.map((g) => g.pts));
+  const algumHoje = ganhos.some((g) => g.n > 0);
+
+  // resumo do dia (mito + zerados) — só quando já houve jogo resolvido hoje
+  if (algumHoje) {
+    const mitos = estado.ranking.filter((l, i) => maxHoje > 0 && ganhos[i].pts === maxHoje).map((l) => l.nome);
+    const zerados = ganhos.filter((g) => g.n > 0 && g.pts === 0).length;
+    c.appendChild(el(`<div class="resumo-dia">
+      ${mitos.length ? `<span>🔥 <strong>Mito do dia:</strong> ${esc(mitos[0])}${mitos.length > 1 ? ` e mais ${mitos.length - 1}` : ''} · <strong>+${maxHoje}</strong> pts</span>` : ''}
+      ${zerados ? `<span>💀 <strong>${zerados}</strong> zeraram hoje</span>` : ''}
+    </div>`));
+  }
+
   const tbl = el(`<table class="tabela"><thead><tr>
     <th class="num">#</th><th>Participante</th><th class="num">Pts</th>
-    <th class="num">Exatos</th><th class="num">Zeros</th>
+    <th class="num">Hoje</th><th class="num">Exa</th><th class="num">Zero</th>
   </tr></thead><tbody></tbody></table>`);
   const tb = $('tbody', tbl);
-  estado.ranking.forEach((l) => {
+  estado.ranking.forEach((l, i) => {
     const eu = l.nome === EU;
+    const g = ganhos[i];
     const medalha = l.posicao <= 3 ? ['🥇', '🥈', '🥉'][l.posicao - 1] : '';
     const acertos = (l.acertouCampeao ? '<span class="tag-acerto" title="acertou o campeão">🏆</span>' : '') +
       (l.acertouArtilheiro ? '<span class="tag-acerto" title="acertou o artilheiro">⚽</span>' : '');
+    let hojeCell;
+    if (g.n === 0) hojeCell = '<span class="hoje-delta neutro">—</span>';
+    else if (g.pts > 0) hojeCell = `<span class="hoje-delta mais">+${g.pts}</span>`;
+    else hojeCell = '<span class="hoje-delta zero">0</span>';
     tb.appendChild(el(`<tr class="${eu ? 'eu' : ''} ${l.posicao <= 3 ? 'topo3' : ''}">
       <td class="num"><span class="pos-medalha">${medalha || l.posicao}</span></td>
       <td><div class="nome-cell">${esc(l.nome)}${acertos}</div></td>
       <td class="pts">${l.pontos}</td>
+      <td class="num">${hojeCell}</td>
       <td class="num">${l.exatos}</td>
       <td class="num">${l.zeros}</td>
     </tr>`));
