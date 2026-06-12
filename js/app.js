@@ -70,10 +70,104 @@ async function carregar() {
     recalcular();
     montarAtualizadoEm();
     render();
+    iniciarAoVivo(); // passa a buscar placares ao vivo (TheSportsDB) e auto-atualizar
   } catch (e) {
     $('#conteudo').innerHTML = `<div class="erro">Erro ao carregar os dados: ${esc(e.message)}.<br>Confirme que os arquivos em <code>data/</code> existem.</div>`;
     console.error(e);
   }
+}
+
+// ===========================================================================
+// AO VIVO — busca os placares direto da TheSportsDB no navegador (CORS liberado,
+// chave pública grátis, sem expor segredo). Atualiza sozinho a cada 60s, então
+// o site reflete o fim de cada jogo em ~1 min, sem depender do robô do GitHub.
+// ===========================================================================
+const TSDB_URL = 'https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id=4429&s=2026';
+const INTERVALO_AO_VIVO = 60000;
+
+function norm(s) {
+  return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z]/g, '');
+}
+
+// Nome do time na TheSportsDB (inglês) → nome em português usado no bolão.
+const TIME_EN_PT = {
+  mexico: 'México', southafrica: 'África do Sul', southkorea: 'Coreia do Sul', korearepublic: 'Coreia do Sul',
+  czechrepublic: 'República Tcheca', czechia: 'República Tcheca', canada: 'Canadá', qatar: 'Catar',
+  switzerland: 'Suíça', bosniaherzegovina: 'Bósnia e Herzegovina', bosniaandherzegovina: 'Bósnia e Herzegovina',
+  brazil: 'Brasil', morocco: 'Marrocos', haiti: 'Haiti', scotland: 'Escócia',
+  usa: 'Estados Unidos', unitedstates: 'Estados Unidos', paraguay: 'Paraguai', australia: 'Austrália',
+  turkey: 'Turquia', turkiye: 'Turquia', germany: 'Alemanha', curacao: 'Curaçao',
+  ivorycoast: 'Costa do Marfim', cotedivoire: 'Costa do Marfim', ecuador: 'Equador',
+  netherlands: 'Holanda', japan: 'Japão', tunisia: 'Tunísia', sweden: 'Suécia',
+  belgium: 'Bélgica', egypt: 'Egito', iran: 'Irã', iriran: 'Irã', newzealand: 'Nova Zelândia',
+  spain: 'Espanha', capeverde: 'Cabo Verde', saudiarabia: 'Arábia Saudita', uruguay: 'Uruguai',
+  france: 'França', senegal: 'Senegal', norway: 'Noruega', iraq: 'Iraque',
+  argentina: 'Argentina', algeria: 'Argélia', austria: 'Áustria', jordan: 'Jordânia',
+  portugal: 'Portugal', uzbekistan: 'Uzbequistão', colombia: 'Colômbia',
+  drcongo: 'RD Congo', congodr: 'RD Congo', democraticrepublicofcongo: 'RD Congo',
+  england: 'Inglaterra', croatia: 'Croácia', ghana: 'Gana', panama: 'Panamá',
+};
+const ptDoTime = (en) => TIME_EN_PT[norm(en)];
+
+// índice dos nossos jogos por par de times (sem ordem) → chave + orientação
+function indiceParTimes() {
+  const idx = {};
+  for (const g of estado.palpites[0].palpites) {
+    const k = [norm(g.casa), norm(g.fora)].sort().join('|');
+    idx[k] = { chave: chaveJogo(g), casaNorm: norm(g.casa) };
+  }
+  return idx;
+}
+
+async function aplicarResultadosAoVivo() {
+  let dados;
+  try {
+    const r = await fetch(TSDB_URL, { cache: 'no-store' });
+    if (!r.ok) return 0;
+    dados = await r.json();
+  } catch (e) { return 0; }
+  const eventos = (dados && dados.events) || [];
+  const idx = indiceParTimes();
+  const hojeISO = new Date().toISOString().slice(0, 10);
+  let aplicados = 0;
+  for (const e of eventos) {
+    const casaPT = ptDoTime(e.strHomeTeam);
+    const foraPT = ptDoTime(e.strAwayTeam);
+    if (!casaPT || !foraPT) continue;
+    if (e.intHomeScore == null || e.intAwayScore == null) continue;
+    // só placar FINAL dos 90' (FT). Jogos com prorrogação ficam p/ o mata-mata manual.
+    const finalizado = e.strStatus === 'FT' || (e.dateEvent && e.dateEvent < hojeISO);
+    if (!finalizado) continue;
+    const ref = idx[[norm(casaPT), norm(foraPT)].sort().join('|')];
+    if (!ref) continue;
+    const alvo = estado.resultados.grupos[ref.chave];
+    if (!alvo) continue;
+    // orienta o placar conforme quem é a casa no nosso cadastro
+    const casaEhHome = ref.casaNorm === norm(casaPT);
+    const gc = Number(casaEhHome ? e.intHomeScore : e.intAwayScore);
+    const gf = Number(casaEhHome ? e.intAwayScore : e.intHomeScore);
+    if (alvo.gc !== gc || alvo.gf !== gf) { alvo.gc = gc; alvo.gf = gf; aplicados++; }
+  }
+  if (aplicados) recalcular();
+  return aplicados;
+}
+
+function carimboAoVivo(ok) {
+  const d = new Date();
+  const hhmm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  $('#atualizado').textContent = ok ? `🟢 ao vivo · ${hhmm}` : (estado.resultados.atualizado_em ? `atualizado: ${estado.resultados.atualizado_em}` : 'aguardando 1º resultado');
+}
+
+function iniciarAoVivo() {
+  if (window.__BOLAO_DADOS__) return; // versão offline não busca ao vivo
+  const tick = async () => {
+    const n = await aplicarResultadosAoVivo();
+    if (n) render();
+    carimboAoVivo(true);
+  };
+  tick();
+  setInterval(tick, INTERVALO_AO_VIVO);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
 }
 
 function recalcular() {

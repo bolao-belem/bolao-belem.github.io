@@ -71,8 +71,12 @@ python3 scripts/build_cockpit.py       # gera bolao_cockpit.html (cartão pessoa
    ```
    (Aparece também em Settings → Pages após a 1ª publicação.)
 
-### Atualização automática
-A Action [`.github/workflows/atualizar-resultados.yml`](.github/workflows/atualizar-resultados.yml) **verifica os jogos a cada 30 min durante o horário de jogos** (13h–04h Brasília) e **republica o site assim que um placar fica final** — ou seja, a atualização acontece sozinha logo após cada jogo terminar, sem horário fixo. O script só gera commit/publicação quando há mudança real (ver `scripts/fetch_resultados.py`).
+### Atualização automática (ao vivo, no navegador)
+A fonte principal de frescor é **client-side**: o próprio site busca os placares direto da **TheSportsDB** (liga `4429`, temporada 2026) a cada **60s** e ao focar a aba — CORS liberado, chave pública grátis, sem expor segredo e **sem depender do GitHub**. Assim, quando um jogo termina, qualquer página aberta reflete em ~1 min (cabeçalho mostra `🟢 ao vivo`). Ver `iniciarAoVivo()`/`aplicarResultadosAoVivo()` em [`js/app.js`](js/app.js).
+
+> Só aplica placar **final dos 90' (status `FT`)** — jogos com prorrogação ficam para o mata-mata manual.
+
+**Reserva (server-side):** a Action [`.github/workflows/atualizar-resultados.yml`](.github/workflows/atualizar-resultados.yml) continua buscando na football-data.org e gravando `data/resultados.json` — usado no 1º render e como fallback se a TheSportsDB falhar/for bloqueada no navegador do usuário.
 
 ### 🔄 Disparar atualização manual (sob demanda)
 No GitHub: aba **Actions** → workflow **"Atualizar resultados e publicar"** → botão **"Run workflow"** → **Run**. Em ~1 minuto o site reflete os novos placares.
