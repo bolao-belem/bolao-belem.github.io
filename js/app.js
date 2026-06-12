@@ -204,30 +204,17 @@ function cardPanorama(g) {
 }
 
 // ---------- TELA 1: RANKING ----------
+// Premiação removida temporariamente (regras em reformulação). Para reativar,
+// basta restaurar o painel .premios + a coluna "Prêmio proj." (calcularPremios() segue pronta).
 function telaRanking(c) {
-  const premios = calcularPremios(estado.pagantes);
-  c.appendChild(el(`
-    <section>
-      <div class="premios">
-        <div class="premio p1"><div class="pos">🥇 1º (60%)</div><div class="val">${brl(premios.primeiro)}</div></div>
-        <div class="premio p2"><div class="pos">🥈 2º (30%)</div><div class="val">${brl(premios.segundo)}</div></div>
-        <div class="premio p3"><div class="pos">🥉 3º (10%)</div><div class="val">${brl(premios.terceiro)}</div></div>
-      </div>
-      <p class="config">Pote: <strong>${brl(premios.pote)}</strong> ·
-        <label>pagantes: <input id="inp-pagantes" type="number" min="1" max="100" value="${estado.pagantes}"></label>
-        <span>(× R$150 − R$300)</span>
-      </p>
-    </section>`));
-
   const tbl = el(`<table class="tabela"><thead><tr>
     <th class="num">#</th><th>Participante</th><th class="num">Pts</th>
-    <th class="num">Exatos</th><th class="num">Zeros</th><th class="num">Prêmio proj.</th>
+    <th class="num">Exatos</th><th class="num">Zeros</th>
   </tr></thead><tbody></tbody></table>`);
   const tb = $('tbody', tbl);
   estado.ranking.forEach((l) => {
     const eu = l.nome === EU;
     const medalha = l.posicao <= 3 ? ['🥇', '🥈', '🥉'][l.posicao - 1] : '';
-    const proj = l.posicao === 1 ? premios.primeiro : l.posicao === 2 ? premios.segundo : l.posicao === 3 ? premios.terceiro : null;
     const acertos = (l.acertouCampeao ? '<span class="tag-acerto" title="acertou o campeão">🏆</span>' : '') +
       (l.acertouArtilheiro ? '<span class="tag-acerto" title="acertou o artilheiro">⚽</span>' : '');
     tb.appendChild(el(`<tr class="${eu ? 'eu' : ''} ${l.posicao <= 3 ? 'topo3' : ''}">
@@ -236,15 +223,9 @@ function telaRanking(c) {
       <td class="pts">${l.pontos}</td>
       <td class="num">${l.exatos}</td>
       <td class="num">${l.zeros}</td>
-      <td class="num">${proj != null ? `<span class="premio-proj">${brl(proj)}</span>` : '—'}</td>
     </tr>`));
   });
   c.appendChild(tbl);
-
-  $('#inp-pagantes').addEventListener('input', (e) => {
-    const v = parseInt(e.target.value, 10);
-    if (v > 0) { estado.pagantes = v; render(); }
-  });
 }
 
 // ---------- TELA 2: JOGOS / RESULTADOS ----------
