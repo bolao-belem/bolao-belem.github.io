@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "12/06/2026 13:58",
+  "atualizado_em": "12/06/2026 20:04",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -25,8 +25,8 @@
     "12/06 | Canadá x Bósnia e Herzegovina": {
       "grupo": "B",
       "horario": "16:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 1
     },
     "12/06 | Estados Unidos x Paraguai": {
       "grupo": "D",
