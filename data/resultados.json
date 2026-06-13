@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "12/06/2026 20:04",
+  "atualizado_em": "13/06/2026 07:10",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -31,8 +31,8 @@
     "12/06 | Estados Unidos x Paraguai": {
       "grupo": "D",
       "horario": "22:00",
-      "gc": null,
-      "gf": null
+      "gc": 4,
+      "gf": 1
     },
     "13/06 | Catar x Suíça": {
       "grupo": "B",
