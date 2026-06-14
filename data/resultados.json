@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "13/06/2026 07:10",
+  "atualizado_em": "14/06/2026 05:57",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -37,26 +37,26 @@
     "13/06 | Catar x Suíça": {
       "grupo": "B",
       "horario": "16:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 1
     },
     "13/06 | Brasil x Marrocos": {
       "grupo": "C",
       "horario": "19:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 1
     },
     "13/06 | Haiti x Escócia": {
       "grupo": "C",
       "horario": "22:00",
-      "gc": null,
-      "gf": null
+      "gc": 0,
+      "gf": 1
     },
     "13/06 | Austrália x Turquia": {
       "grupo": "D",
       "horario": "01:00",
-      "gc": null,
-      "gf": null
+      "gc": 2,
+      "gf": 0
     },
     "14/06 | Alemanha x Curaçao": {
       "grupo": "E",
