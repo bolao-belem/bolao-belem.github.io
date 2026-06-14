@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "14/06/2026 05:57",
+  "atualizado_em": "14/06/2026 17:49",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -61,8 +61,8 @@
     "14/06 | Alemanha x Curaçao": {
       "grupo": "E",
       "horario": "14:00",
-      "gc": null,
-      "gf": null
+      "gc": 7,
+      "gf": 1
     },
     "14/06 | Costa do Marfim x Equador": {
       "grupo": "E",
