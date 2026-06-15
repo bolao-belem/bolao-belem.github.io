@@ -275,7 +275,14 @@ function cardPanorama(g) {
     ? `<div class="pan-acertos">🎯 <strong>${s.exatos}</strong> de ${s.total} cravaram o placar · ✅ ${s.parciais} acertaram o resultado</div>`
     : '';
 
-  return el(`<div class="panorama">
+  // buscador de placar: participantes agrupados por placar predito
+  const realKey = real ? `${real.gc}x${real.gf}` : null;
+  const placaresHtml = placaresDoJogo(g).map((gr) => `<div class="pl-linha${gr.placar === realKey ? ' atual' : ''}">
+      <span class="pl-score">${gr.placar.replace('x', '×')}</span><span class="pl-qtd">${gr.qtd}</span>
+      <span class="pl-nomes">${gr.nomes.map(esc).join(', ')}</span>
+    </div>`).join('');
+
+  const card = el(`<div class="panorama">
     <div class="pan-cab">
       <div class="pan-conf"><span class="grupo-badge">${g.grupo}</span>${esc(g.casa)} <small>x</small> ${esc(g.fora)}</div>
       ${placarBox}
@@ -294,7 +301,34 @@ function cardPanorama(g) {
       <span class="chip ${meuRes.status}">${rotuloStatus(meuRes.status, meuRes.pts)}</span>
     </div>`}
     ${linhaResultado}
+    <button class="pan-toggle" type="button">🔎 Quem apostou cada placar</button>
+    <div class="pan-placares" hidden>
+      ${realKey ? `<div class="pl-hint">🎯 Placar do jogo: <strong>${realKey.replace('x', '×')}</strong> (quem cravou fica em verde)</div>` : ''}
+      ${placaresHtml}
+    </div>
   </div>`);
+
+  const btn = card.querySelector('.pan-toggle');
+  const box = card.querySelector('.pan-placares');
+  btn.addEventListener('click', () => {
+    if (box.hasAttribute('hidden')) { box.removeAttribute('hidden'); btn.textContent = '🔼 Fechar'; }
+    else { box.setAttribute('hidden', ''); btn.textContent = '🔎 Quem apostou cada placar'; }
+  });
+  return card;
+}
+
+// agrupa os 42 participantes pelo placar exato que cada um cravou para o jogo
+function placaresDoJogo(g) {
+  const grupos = {};
+  for (const p of estado.palpites) {
+    const pal = p.palpites.find((x) => x.casa === g.casa && x.fora === g.fora && x.data === g.data);
+    if (!pal) continue;
+    const k = `${pal.palpite[0]}x${pal.palpite[1]}`;
+    (grupos[k] = grupos[k] || []).push(p.nome);
+  }
+  return Object.entries(grupos)
+    .map(([placar, nomes]) => ({ placar, qtd: nomes.length, nomes: nomes.sort((a, b) => a.localeCompare(b, 'pt-BR')) }))
+    .sort((a, b) => b.qtd - a.qtd || a.placar.localeCompare(b.placar));
 }
 
 // ---------- TELA 1: RANKING ----------

@@ -173,6 +173,19 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 .pan-acertos { font-size: .78rem; color: var(--tinta); margin-top: 9px; padding-top: 9px; border-top: 1px dashed var(--linha); }
 .pan-acertos strong { color: var(--exato); }
 
+/* buscador de placar (quem apostou cada placar) */
+.pan-toggle { margin-top: 10px; width: 100%; border: 1px solid var(--linha); background: #fafbfc; color: var(--azul); font-weight: 700; font-size: .8rem; padding: 8px; border-radius: 8px; cursor: pointer; }
+.pan-toggle:hover { background: #f0f2f5; }
+.pan-placares { margin-top: 8px; }
+.pl-hint { font-size: .74rem; color: var(--cinza); margin-bottom: 6px; }
+.pl-hint strong { color: var(--exato); }
+.pl-linha { display: grid; grid-template-columns: 48px 28px 1fr; align-items: start; gap: 6px; padding: 6px 4px; border-top: 1px solid var(--linha); font-size: .8rem; }
+.pl-score { font-weight: 800; font-variant-numeric: tabular-nums; }
+.pl-qtd { color: var(--cinza); font-weight: 700; text-align: center; }
+.pl-nomes { color: var(--tinta); line-height: 1.35; }
+.pl-linha.atual { background: #e3f5e9; border-radius: 6px; }
+.pl-linha.atual .pl-score { color: var(--exato); }
+
 /* ---------- Master ---------- */
 .master-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 520px) { .master-grid { grid-template-columns: 1fr; } }
