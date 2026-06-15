@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "12/06/2026 13:58",
+  "atualizado_em": "14/06/2026 17:49",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -25,44 +25,44 @@
     "12/06 | Canadá x Bósnia e Herzegovina": {
       "grupo": "B",
       "horario": "16:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 1
     },
     "12/06 | Estados Unidos x Paraguai": {
       "grupo": "D",
       "horario": "22:00",
-      "gc": null,
-      "gf": null
+      "gc": 4,
+      "gf": 1
     },
     "13/06 | Catar x Suíça": {
       "grupo": "B",
       "horario": "16:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 1
     },
     "13/06 | Brasil x Marrocos": {
       "grupo": "C",
       "horario": "19:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 1
     },
     "13/06 | Haiti x Escócia": {
       "grupo": "C",
       "horario": "22:00",
-      "gc": null,
-      "gf": null
+      "gc": 0,
+      "gf": 1
     },
     "13/06 | Austrália x Turquia": {
       "grupo": "D",
       "horario": "01:00",
-      "gc": null,
-      "gf": null
+      "gc": 2,
+      "gf": 0
     },
     "14/06 | Alemanha x Curaçao": {
       "grupo": "E",
       "horario": "14:00",
-      "gc": null,
-      "gf": null
+      "gc": 7,
+      "gf": 1
     },
     "14/06 | Costa do Marfim x Equador": {
       "grupo": "E",
