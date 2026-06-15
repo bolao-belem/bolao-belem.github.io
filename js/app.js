@@ -78,18 +78,19 @@ async function carregar() {
 }
 
 // ===========================================================================
-// AO VIVO — busca os placares direto da TheSportsDB no navegador (CORS liberado,
-// chave pública grátis, sem expor segredo). Atualiza sozinho a cada 60s, então
-// o site reflete o fim de cada jogo em ~1 min, sem depender do robô do GitHub.
+// AO VIVO — busca os placares direto da API pública da ESPN no navegador
+// (CORS liberado, grátis, SEM chave, SEM servidor). Uma única chamada traz a Copa
+// inteira (grupos + mata-mata). Atualiza sozinho a cada 60s, então o site reflete
+// o fim de cada jogo em ~1 min, sem depender do robô lento do GitHub.
 // ===========================================================================
-const TSDB_URL = 'https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id=4429&s=2026';
+const ESPN_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719';
 const INTERVALO_AO_VIVO = 60000;
 
 function norm(s) {
   return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z]/g, '');
 }
 
-// Nome do time na TheSportsDB (inglês) → nome em português usado no bolão.
+// Nome do time na API (inglês, ESPN) → nome em português usado no bolão.
 const TIME_EN_PT = {
   mexico: 'México', southafrica: 'África do Sul', southkorea: 'Coreia do Sul', korearepublic: 'Coreia do Sul',
   czechrepublic: 'República Tcheca', czechia: 'República Tcheca', canada: 'Canadá', qatar: 'Catar',
@@ -122,30 +123,33 @@ function indiceParTimes() {
 async function aplicarResultadosAoVivo() {
   let dados;
   try {
-    const r = await fetch(TSDB_URL, { cache: 'no-store' });
+    const r = await fetch(ESPN_URL, { cache: 'no-store' });
     if (!r.ok) return 0;
     dados = await r.json();
   } catch (e) { return 0; }
   const eventos = (dados && dados.events) || [];
   const idx = indiceParTimes();
-  const hojeISO = new Date().toISOString().slice(0, 10);
   let aplicados = 0;
   for (const e of eventos) {
-    const casaPT = ptDoTime(e.strHomeTeam);
-    const foraPT = ptDoTime(e.strAwayTeam);
+    const tipo = e.status && e.status.type;
+    if (!tipo || tipo.state !== 'post') continue; // só jogo finalizado (placar final dos 90')
+    const comp = e.competitions && e.competitions[0];
+    const cs = (comp && comp.competitors) || [];
+    const home = cs.find((x) => x.homeAway === 'home');
+    const away = cs.find((x) => x.homeAway === 'away');
+    if (!home || !away) continue;
+    const casaPT = ptDoTime(home.team && home.team.displayName);
+    const foraPT = ptDoTime(away.team && away.team.displayName);
     if (!casaPT || !foraPT) continue;
-    if (e.intHomeScore == null || e.intAwayScore == null) continue;
-    // só placar FINAL dos 90' (FT). Jogos com prorrogação ficam p/ o mata-mata manual.
-    const finalizado = e.strStatus === 'FT' || (e.dateEvent && e.dateEvent < hojeISO);
-    if (!finalizado) continue;
+    // casa por par de times (só os 72 jogos de grupo entram no índice → mata-mata fica manual)
     const ref = idx[[norm(casaPT), norm(foraPT)].sort().join('|')];
     if (!ref) continue;
     const alvo = estado.resultados.grupos[ref.chave];
     if (!alvo) continue;
-    // orienta o placar conforme quem é a casa no nosso cadastro
     const casaEhHome = ref.casaNorm === norm(casaPT);
-    const gc = Number(casaEhHome ? e.intHomeScore : e.intAwayScore);
-    const gf = Number(casaEhHome ? e.intAwayScore : e.intHomeScore);
+    const gc = Number(casaEhHome ? home.score : away.score);
+    const gf = Number(casaEhHome ? away.score : home.score);
+    if (Number.isNaN(gc) || Number.isNaN(gf)) continue;
     if (alvo.gc !== gc || alvo.gf !== gf) { alvo.gc = gc; alvo.gf = gf; aplicados++; }
   }
   if (aplicados) recalcular();
