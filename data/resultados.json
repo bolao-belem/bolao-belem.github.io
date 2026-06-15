@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "14/06/2026 17:49",
+  "atualizado_em": "15/06/2026 13:28",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -67,14 +67,14 @@
     "14/06 | Costa do Marfim x Equador": {
       "grupo": "E",
       "horario": "20:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 0
     },
     "14/06 | Holanda x Japão": {
       "grupo": "F",
       "horario": "17:00",
-      "gc": null,
-      "gf": null
+      "gc": 2,
+      "gf": 2
     },
     "14/06 | Tunísia x Suécia": {
       "grupo": "F",
