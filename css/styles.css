@@ -236,6 +236,41 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 /* ---------- Barra de progresso no ranking ---------- */
 .tabela tbody tr { background-image: linear-gradient(to right, rgba(0,151,57,.09) var(--pct, 0%), transparent var(--pct, 0%)); }
 
+/* ---------- Teto / Ainda dá? ---------- */
+.teto-resumo { display: flex; align-items: center; gap: 10px; background: #eef6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 9px 12px; margin-bottom: 10px; font-size: .85rem; font-weight: 600; }
+.teto-vivo-tag { background: #e3f5e9; color: var(--exato); border-radius: 999px; padding: 3px 9px; font-size: .78rem; }
+.teto-elim-tag { background: #fdeaea; color: var(--errou); border-radius: 999px; padding: 3px 9px; font-size: .78rem; }
+.teto-val { font-size: .78rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; }
+.teto-val.vivo { color: var(--exato); background: #e3f5e9; }
+.teto-val.elim { color: var(--errou); background: #fdeaea; text-decoration: line-through; }
+
+/* ---------- Duelo head-to-head ---------- */
+.duelo-section { margin-top: 20px; }
+.duelo-tit { font-size: 1.05rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -.2px; }
+.duelo-selects { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.duelo-sel { flex: 1; padding: 9px 10px; border: 1px solid var(--linha); border-radius: 10px; font-size: .85rem; background: var(--card); color: var(--tinta); appearance: none; -webkit-appearance: none; cursor: pointer; }
+.duelo-vs { font-weight: 800; font-size: 1.1rem; color: var(--cinza); flex-shrink: 0; }
+.duelo-card { background: var(--card); border-radius: var(--raio); box-shadow: var(--sombra); padding: 14px; }
+.duelo-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--linha); }
+.duelo-lado { text-align: center; }
+.duelo-lado.b { text-align: center; }
+.duelo-nome { font-weight: 800; font-size: .9rem; line-height: 1.25; }
+.duelo-pos { font-size: .75rem; color: var(--cinza); margin-top: 2px; }
+.duelo-x { font-size: 1.4rem; text-align: center; }
+.duelo-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.duelo-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; background: #fafbfc; border-radius: 8px; padding: 8px 4px; }
+.dv { font-size: 1.1rem; font-weight: 800; }
+.dv.a { color: var(--verde); }
+.dv.b { color: #2563c9; }
+.dl { font-size: .68rem; color: var(--cinza); text-transform: uppercase; letter-spacing: .04em; }
+.duelo-hth { margin-bottom: 12px; }
+.duelo-hth-tit { font-size: .75rem; color: var(--cinza); margin-bottom: 5px; text-align: center; }
+.duelo-barra { height: 28px; border-radius: 8px; }
+.duelo-hth-leg { display: flex; justify-content: space-between; font-size: .7rem; color: var(--cinza); margin-top: 4px; }
+.duelo-extras { border-top: 1px dashed var(--linha); padding-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+.duelo-extra { font-size: .82rem; line-height: 1.4; }
+.duelo-extra strong { color: var(--tinta); }
+
 /* ---------- Botão WhatsApp ---------- */
 .btn-share { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 10px; padding: 10px; min-height: 44px; border: none; background: #25d366; color: #fff; font-weight: 700; font-size: .85rem; border-radius: 10px; cursor: pointer; transition: background .2s, transform .1s; }
 .btn-share:hover { background: #1fb855; }

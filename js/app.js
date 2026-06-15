@@ -13,7 +13,8 @@ const estado = {
   palpites: [], resultados: { grupos: {}, master: {}, config: { pagantes: 42 } },
   matamata: null, ranking: [], pagantes: 42, abaAtiva: 'hoje',
   filtroGrupo: '', filtroParticipante: '', diaSel: null, diaSelDia: null,
-  placaresAbertos: new Set(), // chaves de jogo com o buscador "quem apostou" aberto (sobrevive ao re-render)
+  placaresAbertos: new Set(),
+  dueloA: '', dueloB: '',
 };
 
 // ---------- utilidades ----------
@@ -452,11 +453,37 @@ function placaresDoJogo(g) {
 }
 
 // ---------- TELA 1: RANKING ----------
+
+function calcularTetos() {
+  const master = estado.resultados.master || {};
+  const gruposRes = estado.resultados.grupos || {};
+  let restGrupos = 0;
+  for (const g of estado.palpites[0].palpites) {
+    const r = gruposRes[chaveJogo(g)];
+    if (!r || r.gc == null || r.gf == null) restGrupos++;
+  }
+  let restMata = 0;
+  if (estado.matamata && estado.matamata.fases) {
+    for (const fase of Object.values(estado.matamata.fases)) {
+      for (const jogo of fase.jogos || []) {
+        const rr = fase.resultados && fase.resultados[jogo.id];
+        if (!rr || rr.gc == null || rr.gf == null) restMata++;
+      }
+    }
+  }
+  const bonusMaster = (master.campeao ? 0 : 5) + (master.artilheiro ? 0 : 5);
+  const maxRest = restGrupos * 5 + restMata * 8 + bonusMaster;
+  const lider = estado.ranking.length ? estado.ranking[0].pontos : 0;
+  return estado.ranking.map((l) => {
+    const teto = l.pontos + maxRest;
+    return { teto, vivo: teto >= lider };
+  });
+}
+
 // Premiação removida temporariamente (regras em reformulação). Para reativar,
 // basta restaurar o painel .premios + a coluna "Prêmio proj." (calcularPremios() segue pronta).
 function telaRanking(c) {
   const hoje = hojeBR();
-  // pontos ganhos HOJE por participante (só jogos de hoje já resolvidos)
   const ganhos = estado.ranking.map((l) => {
     const resolv = l.detalhe.filter((d) => d.data === hoje && d.status !== 'pendente');
     return { n: resolv.length, pts: resolv.reduce((s, d) => s + d.pts, 0) };
@@ -464,7 +491,6 @@ function telaRanking(c) {
   const maxHoje = Math.max(0, ...ganhos.map((g) => g.pts));
   const algumHoje = ganhos.some((g) => g.n > 0);
 
-  // resumo do dia (mito + zerados) — só quando já houve jogo resolvido hoje
   if (algumHoje) {
     const mitos = estado.ranking.filter((l, i) => maxHoje > 0 && ganhos[i].pts === maxHoje).map((l) => l.nome);
     const zerados = ganhos.filter((g) => g.n > 0 && g.pts === 0).length;
@@ -474,15 +500,31 @@ function telaRanking(c) {
     </div>`));
   }
 
+  const tetos = calcularTetos();
+  const jogosResolvidos = estado.ranking.length ? estado.ranking[0].detalhe.filter((d) => d.status !== 'pendente').length : 0;
+  const eliminados = tetos.filter((t) => !t.vivo).length;
+  const temTeto = jogosResolvidos > 0;
+
+  if (temTeto) {
+    c.appendChild(el(`<div class="teto-resumo">
+      🎯 <strong>Ainda dá?</strong>
+      ${eliminados > 0
+        ? `<span class="teto-elim-tag">❌ ${eliminados} eliminado${eliminados > 1 ? 's' : ''}</span>`
+        : '<span class="teto-vivo-tag">✅ Todos vivos</span>'}
+    </div>`));
+  }
+
   const maxPts = estado.ranking.length ? estado.ranking[0].pontos : 1;
   const tbl = el(`<table class="tabela"><thead><tr>
     <th class="num">#</th><th>Participante</th><th class="num">Pts</th>
+    ${temTeto ? '<th class="num">Teto</th>' : ''}
     <th class="num">Hoje</th><th class="num">Exa</th><th class="num">Zero</th>
   </tr></thead><tbody></tbody></table>`);
   const tb = $('tbody', tbl);
   estado.ranking.forEach((l, i) => {
     const eu = l.nome === EU;
     const g = ganhos[i];
+    const t = tetos[i];
     const medalha = l.posicao <= 3 ? ['🥇', '🥈', '🥉'][l.posicao - 1] : '';
     const acertos = (l.acertouCampeao ? '<span class="tag-acerto" title="acertou o campeão">🏆</span>' : '') +
       (l.acertouArtilheiro ? '<span class="tag-acerto" title="acertou o artilheiro">⚽</span>' : '');
@@ -490,16 +532,140 @@ function telaRanking(c) {
     if (g.n === 0) hojeCell = '<span class="hoje-delta neutro">—</span>';
     else if (g.pts > 0) hojeCell = `<span class="hoje-delta mais">+${g.pts}</span>`;
     else hojeCell = '<span class="hoje-delta zero">0</span>';
+    const tetoCell = temTeto ? `<td class="num"><span class="teto-val ${t.vivo ? 'vivo' : 'elim'}" title="${t.vivo ? 'Ainda dá!' : 'Eliminado matematicamente'}">${t.teto}</span></td>` : '';
     tb.appendChild(el(`<tr class="${eu ? 'eu' : ''} ${l.posicao <= 3 ? 'topo3' : ''}" style="--pct:${maxPts ? Math.round(l.pontos / maxPts * 100) : 0}%">
       <td class="num"><span class="pos-medalha">${medalha || l.posicao}</span></td>
       <td><div class="nome-cell">${esc(l.nome)}${acertos}</div></td>
       <td class="pts">${l.pontos}</td>
+      ${tetoCell}
       <td class="num">${hojeCell}</td>
       <td class="num">${l.exatos}</td>
       <td class="num">${l.zeros}</td>
     </tr>`));
   });
   c.appendChild(tbl);
+
+  secaoDuelo(c);
+}
+
+// ---------- Duelo head-to-head ----------
+function secaoDuelo(c) {
+  const nomes = estado.palpites.map((p) => p.nome).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  if (!estado.dueloA && nomes.length >= 2) {
+    estado.dueloA = estado.ranking[0] ? estado.ranking[0].nome : nomes[0];
+    estado.dueloB = estado.ranking[1] ? estado.ranking[1].nome : nomes[1];
+  }
+  const wrap = el('<div class="duelo-section"></div>');
+  wrap.appendChild(el('<div class="duelo-tit">⚔️ Duelo</div>'));
+
+  const selects = el(`<div class="duelo-selects">
+    <select class="duelo-sel" id="duelo-a">${nomes.map((n) => `<option ${n === estado.dueloA ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>
+    <span class="duelo-vs">×</span>
+    <select class="duelo-sel" id="duelo-b">${nomes.map((n) => `<option ${n === estado.dueloB ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>
+  </div>`);
+  wrap.appendChild(selects);
+
+  const onMuda = () => {
+    estado.dueloA = $('#duelo-a', selects).value;
+    estado.dueloB = $('#duelo-b', selects).value;
+    const y = window.scrollY;
+    render();
+    window.scrollTo(0, y);
+  };
+  $('#duelo-a', selects).addEventListener('change', onMuda);
+  $('#duelo-b', selects).addEventListener('change', onMuda);
+
+  if (estado.dueloA && estado.dueloB && estado.dueloA !== estado.dueloB) {
+    wrap.appendChild(cardDuelo(estado.dueloA, estado.dueloB));
+  } else if (estado.dueloA === estado.dueloB) {
+    wrap.appendChild(el('<p class="toggle-hint" style="text-align:center">Selecione participantes diferentes.</p>'));
+  }
+  c.appendChild(wrap);
+}
+
+function cardDuelo(nomeA, nomeB) {
+  const rA = estado.ranking.find((r) => r.nome === nomeA);
+  const rB = estado.ranking.find((r) => r.nome === nomeB);
+  if (!rA || !rB) return el('<p class="toggle-hint">Participante não encontrado.</p>');
+
+  const detA = rA.detalhe, detB = rB.detalhe;
+  let wA = 0, wB = 0, emp = 0, identicos = 0, total = 0;
+  let melhor = null, maxDif = 0;
+
+  for (let i = 0; i < detA.length; i++) {
+    const a = detA[i], b = detB[i];
+    if (a.palpite && b.palpite && a.palpite[0] === b.palpite[0] && a.palpite[1] === b.palpite[1]) identicos++;
+    if (!a.real) continue;
+    total++;
+    if (a.pts > b.pts) wA++;
+    else if (b.pts > a.pts) wB++;
+    else emp++;
+    const dif = Math.abs(a.pts - b.pts);
+    if (dif > maxDif) {
+      maxDif = dif;
+      melhor = { casa: a.casa, fora: a.fora, palA: a.palpite, palB: b.palpite, real: a.real, ptsA: a.pts, ptsB: b.pts, vencedor: a.pts > b.pts ? nomeA : nomeB };
+    }
+  }
+
+  const pA = estado.palpites.find((p) => p.nome === nomeA);
+  const pB = estado.palpites.find((p) => p.nome === nomeB);
+  const pctA = total ? Math.round((wA / total) * 100) : 0;
+  const pctE = total ? Math.round((emp / total) * 100) : 0;
+  const pctB = total ? Math.round((wB / total) * 100) : 0;
+
+  let melhorHtml = '';
+  if (melhor) {
+    const palTxt = melhor.palA && melhor.palB ? ` (${melhor.palA[0]}×${melhor.palA[1]} vs ${melhor.palB[0]}×${melhor.palB[1]})` : '';
+    melhorHtml = `<div class="duelo-extra">💥 <strong>Maior vantagem:</strong> ${esc(melhor.vencedor)} (+${maxDif}) em ${esc(melhor.casa)} × ${esc(melhor.fora)}${palTxt}</div>`;
+  }
+
+  const card = el(`<div class="duelo-card">
+    <div class="duelo-head">
+      <div class="duelo-lado a"><div class="duelo-nome">${esc(nomeA)}</div><div class="duelo-pos">${rA.posicao}º · ${rA.pontos} pts</div></div>
+      <div class="duelo-x">⚔️</div>
+      <div class="duelo-lado b"><div class="duelo-nome">${esc(nomeB)}</div><div class="duelo-pos">${rB.posicao}º · ${rB.pontos} pts</div></div>
+    </div>
+    <div class="duelo-stats">
+      <div class="duelo-stat"><span class="dv a">${rA.pontos}</span><span class="dl">Pontos</span><span class="dv b">${rB.pontos}</span></div>
+      <div class="duelo-stat"><span class="dv a">${rA.exatos}</span><span class="dl">Exatos</span><span class="dv b">${rB.exatos}</span></div>
+      <div class="duelo-stat"><span class="dv a">${rA.zeros}</span><span class="dl">Zeros</span><span class="dv b">${rB.zeros}</span></div>
+    </div>
+    ${total > 0 ? `<div class="duelo-hth">
+      <div class="duelo-hth-tit">Nos ${total} jogos resolvidos</div>
+      <div class="barra-tripla duelo-barra">
+        <span class="seg casa" style="width:${pctA}%">${pctA >= 15 ? wA : ''}</span>
+        <span class="seg emp" style="width:${pctE}%">${pctE >= 15 ? emp : ''}</span>
+        <span class="seg fora" style="width:${pctB}%">${pctB >= 15 ? wB : ''}</span>
+      </div>
+      <div class="duelo-hth-leg"><span>🟢 ${esc(nomeA.split(' ')[0])}</span><span>⚪ empate</span><span>🔵 ${esc(nomeB.split(' ')[0])}</span></div>
+    </div>` : ''}
+    <div class="duelo-extras">
+      <div class="duelo-extra">🎯 <strong>${identicos}</strong> apostas idênticas em ${detA.length} jogos</div>
+      ${melhorHtml}
+      ${pA && pB ? `<div class="duelo-extra">🏆 Campeão: <strong>${esc(pA.campeao)}</strong> × <strong>${esc(pB.campeao)}</strong></div>
+      <div class="duelo-extra">⚽ Artilheiro: <strong>${esc(pA.artilheiro)}</strong> × <strong>${esc(pB.artilheiro)}</strong></div>` : ''}
+    </div>
+  </div>`);
+
+  const texto = montarTextoDuelo(nomeA, nomeB, rA, rB, wA, emp, wB, identicos, total);
+  const btn = el('<button class="btn-share" type="button">📲 Mandar no grupo</button>');
+  btn.addEventListener('click', () => {
+    if (navigator.share) navigator.share({ text: texto }).catch(() => {});
+    else window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank');
+  });
+  card.appendChild(btn);
+  return card;
+}
+
+function montarTextoDuelo(nomeA, nomeB, rA, rB, wA, emp, wB, identicos, total) {
+  const l = [];
+  l.push(`⚔️ Duelo — ${nomeA} × ${nomeB}\n`);
+  l.push(`📊 Pontos: ${rA.pontos} × ${rB.pontos}`);
+  l.push(`🏅 Posição: ${rA.posicao}º × ${rB.posicao}º`);
+  if (total > 0) l.push(`🥊 Nos ${total} jogos: ${wA}×${emp}×${wB} (V-E-V)`);
+  l.push(`🎯 ${identicos} apostas idênticas`);
+  l.push('\nVeja ao vivo: https://bolao-belem.github.io/');
+  return l.join('\n');
 }
 
 // ---------- TELA 2: JOGOS / RESULTADOS ----------
