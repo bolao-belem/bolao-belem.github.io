@@ -12,7 +12,7 @@ const MESES = { '01': 'jan', '02': 'fev', '03': 'mar', '04': 'abr', '05': 'mai',
 const estado = {
   palpites: [], resultados: { grupos: {}, master: {}, config: { pagantes: 42 } },
   matamata: null, ranking: [], pagantes: 42, abaAtiva: 'hoje',
-  filtroGrupo: '', filtroParticipante: '',
+  filtroGrupo: '', filtroParticipante: '', diaSel: null,
 };
 
 // ---------- utilidades ----------
@@ -26,6 +26,11 @@ function hojeBR() {
 }
 function dataOrd(dStr) { const [dd, mm] = dStr.split('/'); return Number(mm) * 100 + Number(dd); }
 function dataLonga(dStr) { const [dd, mm] = dStr.split('/'); return `${dd} ${MESES[mm] || mm}`; }
+function dataParaDate(dStr) { const [dd, mm] = dStr.split('/'); return new Date(2026, Number(mm) - 1, Number(dd)); }
+function rotuloDia(d, hoje) {
+  const dif = Math.round((dataParaDate(hoje) - dataParaDate(d)) / 86400000);
+  return dif === 0 ? 'Hoje' : dif === 1 ? 'Ontem' : dif === 2 ? 'Anteontem' : dataLonga(d);
+}
 const brl = (n) => 'R$ ' + n.toLocaleString('pt-BR');
 
 function realDoJogo(g) {
