@@ -146,6 +146,12 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 .cola-jogo .conf { font-size: .85rem; }
 .cola-jogo .conf small { color: var(--cinza); }
 
+/* ---------- Seletor de dias (Hoje/Ontem/…) ---------- */
+.dia-nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 10px; scrollbar-width: none; }
+.dia-nav::-webkit-scrollbar { display: none; }
+.dia-chip { flex: 0 0 auto; border: 1px solid var(--linha); background: var(--card); color: var(--cinza); font-weight: 700; font-size: .8rem; padding: 6px 13px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+.dia-chip.ativo { background: var(--verde); color: #fff; border-color: var(--verde); }
+
 /* ---------- Resenha do dia (tom de bar) ---------- */
 .resenha { background: #1f2733; color: #fff; border-radius: var(--raio); padding: 12px 14px; margin-bottom: 12px; box-shadow: var(--sombra); }
 .rz-tit { font-weight: 800; font-size: .98rem; margin-bottom: 8px; letter-spacing: -.2px; }

@@ -12,7 +12,8 @@ const MESES = { '01': 'jan', '02': 'fev', '03': 'mar', '04': 'abr', '05': 'mai',
 const estado = {
   palpites: [], resultados: { grupos: {}, master: {}, config: { pagantes: 42 } },
   matamata: null, ranking: [], pagantes: 42, abaAtiva: 'hoje',
-  filtroGrupo: '', filtroParticipante: '', diaSel: null,
+  filtroGrupo: '', filtroParticipante: '', diaSel: null, diaSelDia: null,
+  placaresAbertos: new Set(), // chaves de jogo com o buscador "quem apostou" aberto (sobrevive ao re-render)
 };
 
 // ---------- utilidades ----------
@@ -171,7 +172,7 @@ function iniciarAoVivo() {
   if (window.__BOLAO_DADOS__) return; // versão offline não busca ao vivo
   const tick = async () => {
     const n = await aplicarResultadosAoVivo();
-    if (n) render();
+    if (n) { const y = window.scrollY; render(); window.scrollTo(0, y); } // re-render sem pular o scroll
     carimboAoVivo(true);
   };
   tick();
@@ -241,11 +242,14 @@ function resenhaDoDia(dia) {
   }).filter((x) => x.n > 0);
   if (!linhas.length) return null;
 
-  const destaque = linhas.reduce((a, b) => (b.pts > a.pts ? b : a));
+  // craque = quem MAIS pontuou no dia (trata empate com "e mais N", igual à bola murcha)
+  const maxPts = Math.max(...linhas.map((x) => x.pts));
+  const melhores = linhas.filter((x) => x.pts === maxPts).sort((a, b) => a.posicao - b.posicao);
+  const destaque = maxPts > 0 ? { nome: melhores[0].nome, pts: maxPts, n: melhores.length } : null;
   // bola murcha = quem MENOS pontuou no dia (lanterna da rodada)
   const minPts = Math.min(...linhas.map((x) => x.pts));
   const piores = linhas.filter((x) => x.pts === minPts).sort((a, b) => a.posicao - b.posicao);
-  const bolaMurcha = (minPts < destaque.pts) ? { nome: piores[0].nome, pts: minPts, n: piores.length } : null;
+  const bolaMurcha = (minPts < maxPts) ? { nome: piores[0].nome, pts: minPts, n: piores.length } : null;
 
   let absurdo = null, maxErro = -1;
   for (const x of linhas) {
@@ -255,27 +259,67 @@ function resenhaDoDia(dia) {
       if (erro > maxErro) { maxErro = erro; absurdo = { nome: x.nome, casa: j.casa, fora: j.fora, palpite: j.palpite, real: j.real }; }
     }
   }
-  return { destaque: destaque.pts > 0 ? destaque : null, bolaMurcha, absurdo };
+
+  // 🦓 zebra: o resultado do dia que MENOS gente acertou (mais surpreendente)
+  let zebra = null, minAcerto = Infinity;
+  for (const g of estado.palpites[0].palpites) {
+    if (g.data !== dia) continue;
+    const s = statsJogo(g);
+    if (!s.real) continue;
+    const acertaram = s.exatos + s.parciais; // cravaram + acertaram o resultado
+    if (acertaram < minAcerto) {
+      minAcerto = acertaram;
+      const realSign = Math.sign(s.real.gc - s.real.gf);
+      const favCount = Math.max(s.casa, s.empate, s.fora);
+      const empatesNoTopo = [s.casa, s.empate, s.fora].filter((v) => v === favCount).length;
+      let favNome = 'empate', favSign = 0;
+      if (favCount === s.casa) { favNome = g.casa; favSign = 1; }
+      else if (favCount === s.fora) { favNome = g.fora; favSign = -1; }
+      // só acusa um favorito se ele for único (sem empate de votos) e tiver perdido
+      const jab = (empatesNoTopo === 1 && favSign !== realSign) ? favNome : null;
+      zebra = { casa: g.casa, fora: g.fora, gc: s.real.gc, gf: s.real.gf, acertaram, total: s.total, jab };
+    }
+  }
+  if (zebra && zebra.acertaram / zebra.total > 0.30) zebra = null; // só conta se foi mesmo surpresa
+
+  return { destaque, bolaMurcha, zebra, absurdo };
 }
 
 function telaHoje(c) {
   const hoje = hojeBR();
+  // virou o dia? esquece a seleção antiga e volta a abrir no dia corrente (seleção explícita só vale no mesmo dia)
+  if (estado.diaSelDia !== hoje) { estado.diaSel = null; estado.diaSelDia = hoje; }
   const todos = jogosUnicos();
-  const datas = [...new Set(todos.map((g) => g.data))];
+  const datas = [...new Set(todos.map((g) => g.data))].sort((a, b) => dataOrd(a) - dataOrd(b));
 
-  // jogos de hoje; se não houver, mostra o próximo dia com jogos
-  let alvo = hoje, rotulo = 'Hoje';
-  let doDia = todos.filter((g) => g.data === hoje);
-  if (!doDia.length) {
-    const proxima = datas.filter((d) => dataOrd(d) > dataOrd(hoje)).sort((a, b) => dataOrd(a) - dataOrd(b))[0];
-    if (proxima) { alvo = proxima; rotulo = 'Próximos jogos'; doDia = todos.filter((g) => g.data === alvo); }
+  // dias selecionáveis: do início da Copa até hoje. Antes da Copa, mostra o 1º dia.
+  let dias = datas.filter((d) => dataOrd(d) <= dataOrd(hoje));
+  if (!dias.length) dias = [datas[0]];
+
+  // dia escolhido no seletor (se ainda válido) ou o mais recente
+  const alvo = (estado.diaSel && dias.includes(estado.diaSel)) ? estado.diaSel : dias[dias.length - 1];
+  estado.diaSel = alvo;
+  const ehHoje = alvo === hoje;
+  const doDia = todos.filter((g) => g.data === alvo);
+
+  // 📅 seletor de dias (Hoje · Ontem · Anteontem · …) — mais recente primeiro
+  if (dias.length > 1) {
+    const nav = el('<div class="dia-nav"></div>');
+    [...dias].reverse().forEach((d) => {
+      const chip = el(`<button class="dia-chip${d === alvo ? ' ativo' : ''}" type="button">${rotuloDia(d, hoje)}</button>`);
+      chip.addEventListener('click', () => { estado.diaSel = d; render(); window.scrollTo({ top: 0 }); });
+      nav.appendChild(chip);
+    });
+    c.appendChild(nav);
+    const ativoEl = nav.querySelector('.dia-chip.ativo');
+    if (ativoEl) nav.scrollLeft = ativoEl.offsetLeft - nav.clientWidth / 2 + ativoEl.offsetWidth / 2;
   }
 
   // cabeçalho do dia
   const r = estado.ranking.find((x) => x.nome === EU);
   const metaPessoal = (!MODO_GRUPO && r) ? ` · você está em <strong>${r.posicao}º</strong> com <strong>${r.pontos} pts</strong>` : '';
   c.appendChild(el(`<div class="hoje-cab">
-    <div class="hoje-data">${rotulo === 'Hoje' ? '🔥 Hoje' : '📅 Próximos jogos'} · ${dataLonga(alvo)}</div>
+    <div class="hoje-data">${ehHoje ? '🔥 Hoje' : '📅 ' + rotuloDia(alvo, hoje)} · ${dataLonga(alvo)}</div>
     <div class="hoje-meta">${doDia.length} jogo${doDia.length !== 1 ? 's' : ''}${metaPessoal}</div>
   </div>`));
 
@@ -288,11 +332,13 @@ function telaHoje(c) {
   const rz = resenhaDoDia(alvo);
   if (rz) {
     const linhas = [];
-    if (rz.destaque) linhas.push(`<div class="rz-item">🏆 <strong>Craque da rodada:</strong> ${esc(rz.destaque.nome)} fez <b>+${rz.destaque.pts}</b> — tá voando! 🛫</div>`);
-    if (rz.bolaMurcha) { const bm = rz.bolaMurcha; const t = bm.pts === 0 ? 'zerou hoje' : `só <b>+${bm.pts}</b>`; linhas.push(`<div class="rz-item">💨 <strong>Bola murcha:</strong> ${esc(bm.nome)}${bm.n > 1 ? ` e mais ${bm.n - 1}` : ''} — ${t} — paga a saideira 😬</div>`); }
+    if (rz.destaque) { const dq = rz.destaque; linhas.push(`<div class="rz-item">🏆 <strong>Craque da rodada:</strong> ${esc(dq.nome)}${dq.n > 1 ? ` e mais ${dq.n - 1}` : ''} fez <b>+${dq.pts}</b> — tá voando! 🛫</div>`); }
+    if (rz.bolaMurcha) { const bm = rz.bolaMurcha; const t = bm.pts === 0 ? 'zerou' : `só <b>+${bm.pts}</b>`; linhas.push(`<div class="rz-item">💨 <strong>Bola murcha:</strong> ${esc(bm.nome)}${bm.n > 1 ? ` e mais ${bm.n - 1}` : ''} — ${t} — paga a saideira 😬</div>`); }
+    if (rz.zebra) { const z = rz.zebra; linhas.push(`<div class="rz-item">🦓 <strong>Zebra que ninguém viu:</strong> ${esc(z.casa)} <b>${z.gc}×${z.gf}</b> ${esc(z.fora)} — só <b>${z.acertaram}</b> de ${z.total} acertaram${z.jab ? ` (a maioria apostou em ${esc(z.jab)})` : ''} 😱</div>`); }
     if (rz.absurdo) linhas.push(`<div class="rz-item">🤡 <strong>Chute mais doido:</strong> ${esc(rz.absurdo.nome)} cravou <b>${rz.absurdo.palpite[0]}×${rz.absurdo.palpite[1]}</b> em ${esc(rz.absurdo.casa)} × ${esc(rz.absurdo.fora)}… e deu <b>${rz.absurdo.real[0]}×${rz.absurdo.real[1]}</b> 🫠</div>`);
-    c.appendChild(el(`<div class="resenha"><div class="rz-tit">🍻 Resenha do dia</div>${linhas.join('')}</div>`));
-  } else if (rotulo === 'Hoje') {
+    const titulo = ehHoje ? 'Resenha do dia' : `Resenha de ${rotuloDia(alvo, hoje).toLowerCase()}`;
+    c.appendChild(el(`<div class="resenha"><div class="rz-tit">🍻 ${titulo}</div>${linhas.join('')}</div>`));
+  } else if (ehHoje) {
     c.appendChild(el('<div class="resenha-teaser">🍻 A resenha do dia começa assim que os jogos acabarem…</div>'));
   }
 
@@ -305,6 +351,8 @@ function telaHoje(c) {
 
 function cardPanorama(g) {
   const s = statsJogo(g);
+  const chaveP = chaveJogo(g);
+  const aberto0 = estado.placaresAbertos.has(chaveP); // mantém o buscador aberto através do re-render ao vivo
   const pct = (n) => (s.total ? Math.round((n / s.total) * 100) : 0);
   const real = s.real;
 
@@ -348,8 +396,8 @@ function cardPanorama(g) {
       <span class="chip ${meuRes.status}">${rotuloStatus(meuRes.status, meuRes.pts)}</span>
     </div>`}
     ${linhaResultado}
-    <button class="pan-toggle" type="button">🔎 Quem apostou cada placar</button>
-    <div class="pan-placares" hidden>
+    <button class="pan-toggle" type="button">${aberto0 ? '🔼 Fechar' : '🔎 Quem apostou cada placar'}</button>
+    <div class="pan-placares"${aberto0 ? '' : ' hidden'}>
       ${realKey ? `<div class="pl-hint">🎯 Placar do jogo: <strong>${realKey.replace('x', '×')}</strong> (quem cravou fica em verde)</div>` : ''}
       ${placaresHtml}
     </div>
@@ -358,8 +406,8 @@ function cardPanorama(g) {
   const btn = card.querySelector('.pan-toggle');
   const box = card.querySelector('.pan-placares');
   btn.addEventListener('click', () => {
-    if (box.hasAttribute('hidden')) { box.removeAttribute('hidden'); btn.textContent = '🔼 Fechar'; }
-    else { box.setAttribute('hidden', ''); btn.textContent = '🔎 Quem apostou cada placar'; }
+    if (box.hasAttribute('hidden')) { box.removeAttribute('hidden'); btn.textContent = '🔼 Fechar'; estado.placaresAbertos.add(chaveP); }
+    else { box.setAttribute('hidden', ''); btn.textContent = '🔎 Quem apostou cada placar'; estado.placaresAbertos.delete(chaveP); }
   });
   return card;
 }
