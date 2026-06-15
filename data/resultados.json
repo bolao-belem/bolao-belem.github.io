@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "15/06/2026 13:28",
+  "atualizado_em": "15/06/2026 20:21",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -85,8 +85,8 @@
     "15/06 | Bélgica x Egito": {
       "grupo": "G",
       "horario": "16:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 1
     },
     "15/06 | Irã x Nova Zelândia": {
       "grupo": "G",
