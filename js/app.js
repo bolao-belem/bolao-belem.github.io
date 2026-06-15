@@ -227,6 +227,32 @@ function statsJogo(g) {
   return { real, casa, empate, fora, total, exatos, parciais, maisVotado: top[0], maisVotadoQtd: top[1], meu };
 }
 
+// Resenha do dia: craque (mais pontos hoje), bola murcha (zerou, melhor colocado),
+// e chute mais doido (maior erro de placar entre os jogos resolvidos de hoje).
+function resenhaDoDia(dia) {
+  const linhas = estado.ranking.map((l) => {
+    const resolv = l.detalhe.filter((d) => d.data === dia && d.status !== 'pendente');
+    return { nome: l.nome, posicao: l.posicao, n: resolv.length, pts: resolv.reduce((s, d) => s + d.pts, 0), jogos: resolv };
+  }).filter((x) => x.n > 0);
+  if (!linhas.length) return null;
+
+  const destaque = linhas.reduce((a, b) => (b.pts > a.pts ? b : a));
+  // bola murcha = quem MENOS pontuou no dia (lanterna da rodada)
+  const minPts = Math.min(...linhas.map((x) => x.pts));
+  const piores = linhas.filter((x) => x.pts === minPts).sort((a, b) => a.posicao - b.posicao);
+  const bolaMurcha = (minPts < destaque.pts) ? { nome: piores[0].nome, pts: minPts, n: piores.length } : null;
+
+  let absurdo = null, maxErro = -1;
+  for (const x of linhas) {
+    for (const j of x.jogos) {
+      if (!j.real || !j.palpite || j.status !== 'errou') continue;
+      const erro = Math.abs(j.palpite[0] - j.real[0]) + Math.abs(j.palpite[1] - j.real[1]);
+      if (erro > maxErro) { maxErro = erro; absurdo = { nome: x.nome, casa: j.casa, fora: j.fora, palpite: j.palpite, real: j.real }; }
+    }
+  }
+  return { destaque: destaque.pts > 0 ? destaque : null, bolaMurcha, absurdo };
+}
+
 function telaHoje(c) {
   const hoje = hojeBR();
   const todos = jogosUnicos();
@@ -251,6 +277,18 @@ function telaHoje(c) {
   if (!doDia.length) {
     c.appendChild(el('<p class="carregando">Sem jogos previstos. A fase de grupos vai de 11 a 27 de junho.</p>'));
     return;
+  }
+
+  // 🍻 Resenha do dia — craque, bola murcha e chute mais doido (só com jogos já resolvidos)
+  const rz = resenhaDoDia(alvo);
+  if (rz) {
+    const linhas = [];
+    if (rz.destaque) linhas.push(`<div class="rz-item">🏆 <strong>Craque da rodada:</strong> ${esc(rz.destaque.nome)} fez <b>+${rz.destaque.pts}</b> — tá voando! 🛫</div>`);
+    if (rz.bolaMurcha) { const bm = rz.bolaMurcha; const t = bm.pts === 0 ? 'zerou hoje' : `só <b>+${bm.pts}</b>`; linhas.push(`<div class="rz-item">💨 <strong>Bola murcha:</strong> ${esc(bm.nome)}${bm.n > 1 ? ` e mais ${bm.n - 1}` : ''} — ${t} — paga a saideira 😬</div>`); }
+    if (rz.absurdo) linhas.push(`<div class="rz-item">🤡 <strong>Chute mais doido:</strong> ${esc(rz.absurdo.nome)} cravou <b>${rz.absurdo.palpite[0]}×${rz.absurdo.palpite[1]}</b> em ${esc(rz.absurdo.casa)} × ${esc(rz.absurdo.fora)}… e deu <b>${rz.absurdo.real[0]}×${rz.absurdo.real[1]}</b> 🫠</div>`);
+    c.appendChild(el(`<div class="resenha"><div class="rz-tit">🍻 Resenha do dia</div>${linhas.join('')}</div>`));
+  } else if (rotulo === 'Hoje') {
+    c.appendChild(el('<div class="resenha-teaser">🍻 A resenha do dia começa assim que os jogos acabarem…</div>'));
   }
 
   // ordena por horário (quando houver), depois por grupo

@@ -146,6 +146,14 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 .cola-jogo .conf { font-size: .85rem; }
 .cola-jogo .conf small { color: var(--cinza); }
 
+/* ---------- Resenha do dia (tom de bar) ---------- */
+.resenha { background: #1f2733; color: #fff; border-radius: var(--raio); padding: 12px 14px; margin-bottom: 12px; box-shadow: var(--sombra); }
+.rz-tit { font-weight: 800; font-size: .98rem; margin-bottom: 8px; letter-spacing: -.2px; }
+.rz-item { font-size: .85rem; line-height: 1.5; margin: 5px 0; }
+.rz-item strong { color: var(--amarelo); font-weight: 700; }
+.rz-item b { color: #fff; }
+.resenha-teaser { background: #fff7d6; border: 1px solid var(--eu-borda); border-radius: var(--raio); padding: 9px 12px; margin-bottom: 12px; font-size: .82rem; color: #7a5b00; text-align: center; }
+
 /* ---------- Hoje (panorama do dia) ---------- */
 .hoje-cab { background: linear-gradient(135deg, #0a2a66, #143d8f); color: #fff; border-radius: var(--raio); padding: 12px 14px; margin-bottom: 14px; }
 .hoje-data { font-size: 1.05rem; font-weight: 800; }
