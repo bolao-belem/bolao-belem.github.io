@@ -13,7 +13,8 @@
   --parcial: #c98a00;
   --errou: #c0392b;
   --pendente: #9aa0a9;
-  --sombra: 0 1px 3px rgba(20, 23, 31, .08), 0 1px 2px rgba(20, 23, 31, .04);
+  --sombra: 0 1px 3px rgba(20, 23, 31, .07), 0 4px 12px rgba(20, 23, 31, .05);
+  --sombra-hover: 0 4px 16px rgba(20, 23, 31, .12), 0 1px 4px rgba(20, 23, 31, .06);
   --raio: 12px;
 }
 
@@ -25,7 +26,7 @@ body {
   background: var(--fundo);
   color: var(--tinta);
   line-height: 1.45;
-  padding-bottom: 64px;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ---------- Topo ---------- */
@@ -58,15 +59,19 @@ body {
   flex: 1 0 auto;
   border: none;
   background: none;
-  padding: 12px 10px;
-  font-size: .9rem;
+  padding: 14px 14px;
+  min-height: 48px;
+  font-size: .88rem;
   font-weight: 600;
   color: var(--cinza);
   cursor: pointer;
   border-bottom: 3px solid transparent;
   white-space: nowrap;
+  transition: color .2s, border-color .2s, background .2s;
+  border-radius: 8px 8px 0 0;
 }
-.aba.ativa { color: var(--verde); border-bottom-color: var(--verde); }
+.aba:hover:not(.ativa) { color: var(--tinta); background: rgba(0,151,57,.06); }
+.aba.ativa { color: var(--verde); border-bottom-color: var(--verde); background: rgba(0,151,57,.08); }
 
 /* ---------- Conteúdo ---------- */
 main { padding: 14px 12px 24px; max-width: 760px; margin: 0 auto; }
@@ -112,7 +117,8 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 .filtros select, .filtros input { padding: 8px; border: 1px solid var(--linha); border-radius: 8px; font-size: .85rem; background: var(--card); }
 .dia-titulo { font-size: .8rem; font-weight: 700; color: var(--azul); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: .03em; }
 .dia-titulo.hoje { color: var(--verde); }
-.jogo { background: var(--card); border-radius: var(--raio); box-shadow: var(--sombra); margin-bottom: 10px; overflow: hidden; }
+.jogo { background: var(--card); border-radius: var(--raio); box-shadow: var(--sombra); margin-bottom: 10px; overflow: hidden; transition: box-shadow .2s ease, transform .2s ease; }
+.jogo:hover { box-shadow: var(--sombra-hover); transform: translateY(-1px); }
 .jogo-cab { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; gap: 8px; cursor: pointer; }
 .jogo-cab .conf { font-weight: 600; font-size: .92rem; }
 .grupo-badge { font-size: .68rem; background: var(--azul); color: #fff; padding: 1px 6px; border-radius: 999px; margin-right: 6px; display: inline-block; }
@@ -147,10 +153,12 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 .cola-jogo .conf small { color: var(--cinza); }
 
 /* ---------- Seletor de dias (Hoje/Ontem/…) ---------- */
-.dia-nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 10px; scrollbar-width: none; }
+.dia-nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 10px; scrollbar-width: none; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scroll-padding: 0 16px; }
 .dia-nav::-webkit-scrollbar { display: none; }
-.dia-chip { flex: 0 0 auto; border: 1px solid var(--linha); background: var(--card); color: var(--cinza); font-weight: 700; font-size: .8rem; padding: 6px 13px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
-.dia-chip.ativo { background: var(--verde); color: #fff; border-color: var(--verde); }
+.dia-chip { flex: 0 0 auto; border: 1px solid var(--linha); background: var(--card); color: var(--cinza); font-weight: 700; font-size: .8rem; padding: 10px 16px; min-height: 44px; display: flex; align-items: center; border-radius: 999px; cursor: pointer; white-space: nowrap; transition: transform .1s ease, background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease; scroll-snap-align: center; }
+.dia-chip:hover:not(.ativo) { background: #f0f4f8; border-color: #cfd3da; }
+.dia-chip:active { transform: scale(.93); }
+.dia-chip.ativo { background: var(--verde); color: #fff; border-color: var(--verde); box-shadow: 0 2px 8px rgba(0,151,57,.3); }
 
 /* ---------- Resenha do dia (tom de bar) ---------- */
 .resenha { background: #1f2733; color: #fff; border-radius: var(--raio); padding: 12px 14px; margin-bottom: 12px; box-shadow: var(--sombra); }
@@ -165,7 +173,8 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 .hoje-data { font-size: 1.05rem; font-weight: 800; }
 .hoje-meta { font-size: .82rem; opacity: .92; margin-top: 2px; }
 .hoje-meta strong { color: var(--amarelo); }
-.panorama { background: var(--card); border-radius: var(--raio); box-shadow: var(--sombra); padding: 12px; margin-bottom: 12px; }
+.panorama { background: var(--card); border-radius: var(--raio); box-shadow: var(--sombra); padding: 12px; margin-bottom: 12px; transition: box-shadow .2s ease, transform .2s ease; }
+.panorama:hover { box-shadow: var(--sombra-hover); transform: translateY(-1px); }
 .pan-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .pan-conf { font-weight: 700; font-size: .96rem; }
 .pan-conf small { color: var(--cinza); font-weight: 400; }
@@ -190,7 +199,8 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 /* buscador de placar (quem apostou cada placar) */
 .pan-toggle { margin-top: 10px; width: 100%; border: 1px solid var(--linha); background: #fafbfc; color: var(--azul); font-weight: 700; font-size: .8rem; padding: 8px; border-radius: 8px; cursor: pointer; }
 .pan-toggle:hover { background: #f0f2f5; }
-.pan-placares { margin-top: 8px; }
+.pan-placares { margin-top: 8px; max-height: 0; overflow: hidden; opacity: 0; transition: max-height .3s ease-out, opacity .25s ease-out; }
+.pan-placares.aberto { max-height: 2000px; opacity: 1; }
 .pl-hint { font-size: .74rem; color: var(--cinza); margin-bottom: 6px; }
 .pl-hint strong { color: var(--exato); }
 .pl-linha { display: grid; grid-template-columns: 48px 28px 1fr; align-items: start; gap: 6px; padding: 6px 4px; border-top: 1px solid var(--linha); font-size: .8rem; }
@@ -214,3 +224,19 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 
 .rodape { text-align: center; font-size: .72rem; color: var(--cinza); padding: 8px 16px 20px; }
 .rodape code { background: #eef0f3; padding: 1px 5px; border-radius: 5px; }
+
+/* ---------- Pulso ao vivo ---------- */
+@keyframes pulso-vivo {
+  0%   { transform: scale(1); text-shadow: none; }
+  50%  { transform: scale(1.08); text-shadow: 0 0 8px rgba(0, 151, 57, .5); }
+  100% { transform: scale(1); text-shadow: none; }
+}
+.atualizado.pulso { animation: pulso-vivo .6s ease-out; display: inline-block; }
+
+/* ---------- Barra de progresso no ranking ---------- */
+.tabela tbody tr { background-image: linear-gradient(to right, rgba(0,151,57,.09) var(--pct, 0%), transparent var(--pct, 0%)); }
+
+/* ---------- Botão WhatsApp ---------- */
+.btn-share { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 10px; padding: 10px; min-height: 44px; border: none; background: #25d366; color: #fff; font-weight: 700; font-size: .85rem; border-radius: 10px; cursor: pointer; transition: background .2s, transform .1s; }
+.btn-share:hover { background: #1fb855; }
+.btn-share:active { transform: scale(.97); }

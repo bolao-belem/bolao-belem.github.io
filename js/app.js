@@ -165,7 +165,9 @@ async function aplicarResultadosAoVivo() {
 function carimboAoVivo(ok) {
   const d = new Date();
   const hhmm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  $('#atualizado').textContent = ok ? `🟢 ao vivo · ${hhmm}` : (estado.resultados.atualizado_em ? `atualizado: ${estado.resultados.atualizado_em}` : 'aguardando 1º resultado');
+  const elAt = $('#atualizado');
+  elAt.textContent = ok ? `🟢 ao vivo · ${hhmm}` : (estado.resultados.atualizado_em ? `atualizado: ${estado.resultados.atualizado_em}` : 'aguardando 1º resultado');
+  if (ok) { elAt.classList.remove('pulso'); void elAt.offsetWidth; elAt.classList.add('pulso'); elAt.addEventListener('animationend', () => elAt.classList.remove('pulso'), { once: true }); }
 }
 
 function iniciarAoVivo() {
@@ -285,6 +287,21 @@ function resenhaDoDia(dia) {
   return { destaque, bolaMurcha, zebra, absurdo };
 }
 
+function montarTextoShare(rz, dia, hoje) {
+  const rotulo = dia === hoje ? 'hoje' : rotuloDia(dia, hoje).toLowerCase();
+  const l = [];
+  l.push(`⚽ Bolão Copa 2026 — Resenha de ${rotulo} (${dataLonga(dia)})\n`);
+  if (rz.destaque) { const d = rz.destaque; l.push(`🏆 Craque: ${d.nome}${d.n > 1 ? ` e +${d.n - 1}` : ''} (+${d.pts} pts)`); }
+  if (rz.bolaMurcha) { const b = rz.bolaMurcha; l.push(`💨 Bola murcha: ${b.nome}${b.n > 1 ? ` e +${b.n - 1}` : ''} (${b.pts === 0 ? 'zerou' : '+' + b.pts})`); }
+  if (rz.zebra) { const z = rz.zebra; l.push(`🦓 Zebra: ${z.casa} ${z.gc}x${z.gf} ${z.fora} — só ${z.acertaram} de ${z.total} acertaram`); }
+  if (rz.absurdo) { const a = rz.absurdo; l.push(`🤡 Chute doido: ${a.nome} cravou ${a.palpite[0]}x${a.palpite[1]} (deu ${a.real[0]}x${a.real[1]})`); }
+  l.push('');
+  l.push('🔝 Top 5:');
+  estado.ranking.slice(0, 5).forEach((r, i) => l.push(`${i + 1}. ${r.nome} — ${r.pontos} pts`));
+  l.push('\nVeja ao vivo: https://bolao-belem.github.io/');
+  return l.join('\n');
+}
+
 function telaHoje(c) {
   const hoje = hojeBR();
   // virou o dia? esquece a seleção antiga e volta a abrir no dia corrente (seleção explícita só vale no mesmo dia)
@@ -338,6 +355,14 @@ function telaHoje(c) {
     if (rz.absurdo) linhas.push(`<div class="rz-item">🤡 <strong>Chute mais doido:</strong> ${esc(rz.absurdo.nome)} cravou <b>${rz.absurdo.palpite[0]}×${rz.absurdo.palpite[1]}</b> em ${esc(rz.absurdo.casa)} × ${esc(rz.absurdo.fora)}… e deu <b>${rz.absurdo.real[0]}×${rz.absurdo.real[1]}</b> 🫠</div>`);
     const titulo = ehHoje ? 'Resenha do dia' : `Resenha de ${rotuloDia(alvo, hoje).toLowerCase()}`;
     c.appendChild(el(`<div class="resenha"><div class="rz-tit">🍻 ${titulo}</div>${linhas.join('')}</div>`));
+    // botão WhatsApp — monta texto plain pra compartilhar
+    const textoShare = montarTextoShare(rz, alvo, hoje);
+    const btnShare = el('<button class="btn-share" type="button">📲 Mandar no grupo</button>');
+    btnShare.addEventListener('click', () => {
+      if (navigator.share) { navigator.share({ text: textoShare }).catch(() => {}); }
+      else { window.open('https://wa.me/?text=' + encodeURIComponent(textoShare), '_blank'); }
+    });
+    c.appendChild(btnShare);
   } else if (ehHoje) {
     c.appendChild(el('<div class="resenha-teaser">🍻 A resenha do dia começa assim que os jogos acabarem…</div>'));
   }
@@ -397,7 +422,7 @@ function cardPanorama(g) {
     </div>`}
     ${linhaResultado}
     <button class="pan-toggle" type="button">${aberto0 ? '🔼 Fechar' : '🔎 Quem apostou cada placar'}</button>
-    <div class="pan-placares"${aberto0 ? '' : ' hidden'}>
+    <div class="pan-placares${aberto0 ? ' aberto' : ''}">
       ${realKey ? `<div class="pl-hint">🎯 Placar do jogo: <strong>${realKey.replace('x', '×')}</strong> (quem cravou fica em verde)</div>` : ''}
       ${placaresHtml}
     </div>
@@ -406,8 +431,8 @@ function cardPanorama(g) {
   const btn = card.querySelector('.pan-toggle');
   const box = card.querySelector('.pan-placares');
   btn.addEventListener('click', () => {
-    if (box.hasAttribute('hidden')) { box.removeAttribute('hidden'); btn.textContent = '🔼 Fechar'; estado.placaresAbertos.add(chaveP); }
-    else { box.setAttribute('hidden', ''); btn.textContent = '🔎 Quem apostou cada placar'; estado.placaresAbertos.delete(chaveP); }
+    if (!box.classList.contains('aberto')) { box.classList.add('aberto'); btn.textContent = '🔼 Fechar'; estado.placaresAbertos.add(chaveP); }
+    else { box.classList.remove('aberto'); btn.textContent = '🔎 Quem apostou cada placar'; estado.placaresAbertos.delete(chaveP); }
   });
   return card;
 }
@@ -449,6 +474,7 @@ function telaRanking(c) {
     </div>`));
   }
 
+  const maxPts = estado.ranking.length ? estado.ranking[0].pontos : 1;
   const tbl = el(`<table class="tabela"><thead><tr>
     <th class="num">#</th><th>Participante</th><th class="num">Pts</th>
     <th class="num">Hoje</th><th class="num">Exa</th><th class="num">Zero</th>
@@ -464,7 +490,7 @@ function telaRanking(c) {
     if (g.n === 0) hojeCell = '<span class="hoje-delta neutro">—</span>';
     else if (g.pts > 0) hojeCell = `<span class="hoje-delta mais">+${g.pts}</span>`;
     else hojeCell = '<span class="hoje-delta zero">0</span>';
-    tb.appendChild(el(`<tr class="${eu ? 'eu' : ''} ${l.posicao <= 3 ? 'topo3' : ''}">
+    tb.appendChild(el(`<tr class="${eu ? 'eu' : ''} ${l.posicao <= 3 ? 'topo3' : ''}" style="--pct:${maxPts ? Math.round(l.pontos / maxPts * 100) : 0}%">
       <td class="num"><span class="pos-medalha">${medalha || l.posicao}</span></td>
       <td><div class="nome-cell">${esc(l.nome)}${acertos}</div></td>
       <td class="pts">${l.pontos}</td>
