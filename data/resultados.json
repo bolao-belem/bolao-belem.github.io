@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "16/06/2026 15:16",
+  "atualizado_em": "16/06/2026 20:57",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -109,8 +109,8 @@
     "16/06 | França x Senegal": {
       "grupo": "I",
       "horario": "16:00",
-      "gc": null,
-      "gf": null
+      "gc": 3,
+      "gf": 1
     },
     "16/06 | Noruega x Iraque": {
       "grupo": "I",
