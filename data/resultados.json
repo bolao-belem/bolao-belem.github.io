@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "15/06/2026 20:21",
+  "atualizado_em": "16/06/2026 15:16",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -91,8 +91,8 @@
     "15/06 | Irã x Nova Zelândia": {
       "grupo": "G",
       "horario": "22:00",
-      "gc": null,
-      "gf": null
+      "gc": 2,
+      "gf": 2
     },
     "15/06 | Espanha x Cabo Verde": {
       "grupo": "H",
@@ -103,8 +103,8 @@
     "15/06 | Arábia Saudita x Uruguai": {
       "grupo": "H",
       "horario": "19:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 1
     },
     "16/06 | França x Senegal": {
       "grupo": "I",
