@@ -454,14 +454,20 @@ function placaresDoJogo(g) {
 
 // ---------- TELA 1: RANKING ----------
 
-function calcularTetos() {
-  const master = estado.resultados.master || {};
+// Quantos jogos da fase de grupos ainda não têm resultado registrado.
+function gruposRestantes() {
   const gruposRes = estado.resultados.grupos || {};
-  let restGrupos = 0;
+  let n = 0;
   for (const g of estado.palpites[0].palpites) {
     const r = gruposRes[chaveJogo(g)];
-    if (!r || r.gc == null || r.gf == null) restGrupos++;
+    if (!r || r.gc == null || r.gf == null) n++;
   }
+  return n;
+}
+
+function calcularTetos() {
+  const master = estado.resultados.master || {};
+  const restGrupos = gruposRestantes();
   let restMata = 0;
   if (estado.matamata && estado.matamata.fases) {
     for (const fase of Object.values(estado.matamata.fases)) {
@@ -500,10 +506,15 @@ function telaRanking(c) {
     </div>`));
   }
 
+  // 🎯 Teto / "Ainda dá?" — só entra em cena na reta final: a partir da ÚLTIMA RODADA da fase de
+  // grupos (faltando ≤ 1 rodada = totalGrupos/3 jogos). Antes disso o ranking mantém as colunas
+  // normais (Hoje/Exa/Zero), sem comprometer o espaço no celular.
+  const totalGrupos = estado.palpites.length ? estado.palpites[0].palpites.length : 0;
+  const restGrupos = gruposRestantes();
   const tetos = calcularTetos();
-  const jogosResolvidos = estado.ranking.length ? estado.ranking[0].detalhe.filter((d) => d.status !== 'pendente').length : 0;
   const eliminados = tetos.filter((t) => !t.vivo).length;
-  const temTeto = jogosResolvidos > 0;
+  const temTeto = totalGrupos > 0 && restGrupos <= Math.round(totalGrupos / 3);
+  const secClass = temTeto ? ' col-sec' : '';
 
   if (temTeto) {
     c.appendChild(el(`<div class="teto-resumo">
@@ -518,7 +529,7 @@ function telaRanking(c) {
   const tbl = el(`<table class="tabela"><thead><tr>
     <th class="num">#</th><th>Participante</th><th class="num">Pts</th>
     ${temTeto ? '<th class="num">Teto</th>' : ''}
-    <th class="num col-sec">Hoje</th><th class="num col-sec">Exa</th><th class="num col-sec">Zero</th>
+    <th class="num${secClass}">Hoje</th><th class="num${secClass}">Exa</th><th class="num${secClass}">Zero</th>
   </tr></thead><tbody></tbody></table>`);
   const tb = $('tbody', tbl);
   estado.ranking.forEach((l, i) => {
@@ -538,9 +549,9 @@ function telaRanking(c) {
       <td><div class="nome-cell">${esc(l.nome)}${acertos}</div></td>
       <td class="pts">${l.pontos}</td>
       ${tetoCell}
-      <td class="num col-sec">${hojeCell}</td>
-      <td class="num col-sec">${l.exatos}</td>
-      <td class="num col-sec">${l.zeros}</td>
+      <td class="num${secClass}">${hojeCell}</td>
+      <td class="num${secClass}">${l.exatos}</td>
+      <td class="num${secClass}">${l.zeros}</td>
     </tr>`));
   });
   c.appendChild(tbl);
