@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "17/06/2026 19:26",
+  "atualizado_em": "18/06/2026 09:04",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -139,8 +139,8 @@
     "17/06 | Uzbequistão x Colômbia": {
       "grupo": "K",
       "horario": "23:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 3
     },
     "17/06 | Inglaterra x Croácia": {
       "grupo": "L",
@@ -151,8 +151,8 @@
     "17/06 | Gana x Panamá": {
       "grupo": "L",
       "horario": "20:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 0
     },
     "18/06 | África do Sul x República Tcheca": {
       "grupo": "A",
