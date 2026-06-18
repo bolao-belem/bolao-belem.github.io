@@ -518,7 +518,7 @@ function telaRanking(c) {
   const tbl = el(`<table class="tabela"><thead><tr>
     <th class="num">#</th><th>Participante</th><th class="num">Pts</th>
     ${temTeto ? '<th class="num">Teto</th>' : ''}
-    <th class="num">Hoje</th><th class="num">Exa</th><th class="num">Zero</th>
+    <th class="num col-sec">Hoje</th><th class="num col-sec">Exa</th><th class="num col-sec">Zero</th>
   </tr></thead><tbody></tbody></table>`);
   const tb = $('tbody', tbl);
   estado.ranking.forEach((l, i) => {
@@ -538,9 +538,9 @@ function telaRanking(c) {
       <td><div class="nome-cell">${esc(l.nome)}${acertos}</div></td>
       <td class="pts">${l.pontos}</td>
       ${tetoCell}
-      <td class="num">${hojeCell}</td>
-      <td class="num">${l.exatos}</td>
-      <td class="num">${l.zeros}</td>
+      <td class="num col-sec">${hojeCell}</td>
+      <td class="num col-sec">${l.exatos}</td>
+      <td class="num col-sec">${l.zeros}</td>
     </tr>`));
   });
   c.appendChild(tbl);
@@ -708,7 +708,8 @@ function cardJogo(g) {
   const placar = real
     ? `<span class="placar">${real.gc}<span style="opacity:.4"> x </span>${real.gf}</span>`
     : `<span class="placar pendente">${hora ? '🕒 ' + esc(hora) : 'a jogar'}</span>`;
-  const card = el(`<div class="jogo">
+  const statusClass = real ? 'jogo-resolvido' : (hora ? 'jogo-futuro' : 'jogo-futuro');
+  const card = el(`<div class="jogo ${statusClass}">
     <div class="jogo-cab">
       <div class="conf"><span class="grupo-badge">${g.grupo}</span>${esc(g.casa)} <small style="color:#9aa0a9">x</small> ${esc(g.fora)}</div>
       ${placar}

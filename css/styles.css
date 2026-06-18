@@ -220,10 +220,37 @@ h2.titulo { font-size: 1.05rem; margin: 4px 0 12px; }
 .barra > span { display: block; height: 100%; background: var(--verde); border-radius: 999px; }
 .barra-item.eu .barra > span { background: var(--amarelo); }
 .barra-item.eu .barra-topo { font-weight: 700; }
+/* Primeiro da lista (líder) com barra mais escura e destaque */
+.barra-item:first-child .barra > span { background: #007a2e; }
+.barra-item:first-child .barra-topo { font-weight: 700; color: var(--tinta); }
 .meu-master { background: var(--eu); border: 1px solid var(--eu-borda); border-radius: var(--raio); padding: 10px 12px; margin-bottom: 12px; font-size: .9rem; }
 
+/* ---------- Status visual dos jogos (aba Jogos) ---------- */
+.jogo-resolvido .jogo-cab { border-left: 3px solid var(--exato); }
+.jogo-futuro .jogo-cab { border-left: 3px solid #e2e6eb; }
+
 .rodape { text-align: center; font-size: .72rem; color: var(--cinza); padding: 8px 16px 20px; }
-.rodape code { background: #eef0f3; padding: 1px 5px; border-radius: 5px; }
+
+/* ---------- Responsive ---------- */
+/* Header: esconde " · Copa do Mundo 2026" em telas muito estreitas */
+@media (max-width: 420px) { .sub-detalhe { display: none; } }
+
+/* Ranking: esconde colunas secundárias (Hoje/Exa/Zero) em mobile → menos colunas, nomes em 1 linha */
+@media (max-width: 600px) { .col-sec { display: none !important; } }
+
+/* Jogos: filtros lado a lado em vez de empilhados no mobile */
+@media (max-width: 600px) {
+  .filtros { flex-wrap: nowrap; gap: 6px; }
+  .filtros select { flex: 1; min-width: 0; font-size: .8rem; padding: 7px 6px; }
+}
+
+/* Duelo: selects mais compactos no mobile */
+@media (max-width: 480px) {
+  .duelo-sel { font-size: .78rem; padding: 8px 6px; }
+  .duelo-nome { font-size: .82rem; }
+  .duelo-stats { gap: 5px; }
+  .dv { font-size: .95rem; }
+}
 
 /* ---------- Pulso ao vivo ---------- */
 @keyframes pulso-vivo {
