@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "18/06/2026 20:05",
+  "atualizado_em": "19/06/2026 09:59",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -163,8 +163,8 @@
     "18/06 | México x Coreia do Sul": {
       "grupo": "A",
       "horario": "22:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 0
     },
     "18/06 | Suíça x Bósnia e Herzegovina": {
       "grupo": "B",
@@ -175,8 +175,8 @@
     "18/06 | Canadá x Catar": {
       "grupo": "B",
       "horario": "19:00",
-      "gc": null,
-      "gf": null
+      "gc": 6,
+      "gf": 0
     },
     "19/06 | Marrocos x Escócia": {
       "grupo": "C",
