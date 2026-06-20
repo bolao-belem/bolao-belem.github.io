@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "20/06/2026 05:33",
+  "atualizado_em": "20/06/2026 17:51",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -217,8 +217,8 @@
     "20/06 | Holanda x Suécia": {
       "grupo": "F",
       "horario": "14:00",
-      "gc": null,
-      "gf": null
+      "gc": 5,
+      "gf": 1
     },
     "21/06 | Japão x Tunísia": {
       "grupo": "F",
