@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "21/06/2026 07:48",
+  "atualizado_em": "21/06/2026 17:55",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -241,8 +241,8 @@
     "21/06 | Espanha x Arábia Saudita": {
       "grupo": "H",
       "horario": "13:00",
-      "gc": null,
-      "gf": null
+      "gc": 4,
+      "gf": 0
     },
     "21/06 | Cabo Verde x Uruguai": {
       "grupo": "H",
