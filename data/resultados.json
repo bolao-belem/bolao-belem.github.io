@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "23/06/2026 07:48",
+  "atualizado_em": "23/06/2026 18:52",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -277,8 +277,8 @@
     "23/06 | Portugal x Uzbequistão": {
       "grupo": "K",
       "horario": "14:00",
-      "gc": null,
-      "gf": null
+      "gc": 5,
+      "gf": 0
     },
     "23/06 | Colômbia x RD Congo": {
       "grupo": "K",
