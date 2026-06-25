@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "24/06/2026 07:28",
+  "atualizado_em": "25/06/2026 05:40",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -307,8 +307,8 @@
     "24/06 | África do Sul x Coreia do Sul": {
       "grupo": "A",
       "horario": "22:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 0
     },
     "24/06 | Canadá x Suíça": {
       "grupo": "B",
@@ -331,8 +331,8 @@
     "24/06 | Marrocos x Haiti": {
       "grupo": "C",
       "horario": "19:00",
-      "gc": null,
-      "gf": null
+      "gc": 4,
+      "gf": 2
     },
     "25/06 | Estados Unidos x Turquia": {
       "grupo": "D",
