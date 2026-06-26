@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "25/06/2026 05:40",
+  "atualizado_em": "26/06/2026 07:30",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -343,8 +343,8 @@
     "25/06 | Paraguai x Austrália": {
       "grupo": "D",
       "horario": "23:00",
-      "gc": null,
-      "gf": null
+      "gc": 0,
+      "gf": 0
     },
     "25/06 | Alemanha x Equador": {
       "grupo": "E",
@@ -355,8 +355,8 @@
     "25/06 | Curaçao x Costa do Marfim": {
       "grupo": "E",
       "horario": "17:00",
-      "gc": null,
-      "gf": null
+      "gc": 0,
+      "gf": 2
     },
     "25/06 | Holanda x Tunísia": {
       "grupo": "F",
@@ -367,8 +367,8 @@
     "25/06 | Japão x Suécia": {
       "grupo": "F",
       "horario": "20:00",
-      "gc": null,
-      "gf": null
+      "gc": 1,
+      "gf": 1
     },
     "26/06 | Espanha x Uruguai": {
       "grupo": "H",
