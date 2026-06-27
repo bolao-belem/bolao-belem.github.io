@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "27/06/2026 05:07",
+  "atualizado_em": "27/06/2026 17:17",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -404,7 +404,7 @@
       "grupo": "G",
       "horario": "00:00",
       "gc": 1,
-      "gf": 2
+      "gf": 1
     },
     "27/06 | Argentina x Jordânia": {
       "grupo": "J",
