@@ -3,7 +3,7 @@
   "config": {
     "pagantes": 42
   },
-  "atualizado_em": "27/06/2026 20:47",
+  "atualizado_em": "28/06/2026 07:14",
   "master": {
     "campeao": null,
     "artilheiro": null,
@@ -415,8 +415,8 @@
     "27/06 | Argélia x Áustria": {
       "grupo": "J",
       "horario": "23:00",
-      "gc": null,
-      "gf": null
+      "gc": 3,
+      "gf": 3
     },
     "27/06 | Portugal x Colômbia": {
       "grupo": "K",
